@@ -1,0 +1,95 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #0a0a0a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Range input */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 8px;
+  background: #3f3f46;
+  border-radius: 4px;
+}
+input[type="range"]::-moz-range-track {
+  height: 8px;
+  background: #3f3f46;
+  border-radius: 4px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fde047;
+  border: 3px solid #0a0a0a;
+  margin-top: -8px;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fde047;
+  border: 3px solid #0a0a0a;
+}
+
+/* Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 #18181b;
+}
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-track { background: #18181b; }
+*::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 3px; }
+
+/* Marquee animations */
+@keyframes ss-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-25%); }
+}
+@keyframes ss-marquee-rev {
+  from { transform: translateX(-25%); }
+  to   { transform: translateX(0); }
+}
+.ss-marquee-anim     { animation: ss-marquee     28s linear infinite; }
+.ss-marquee-anim-rev { animation: ss-marquee-rev 28s linear infinite; }
+
+/* Polaroid positions */
+.ss-polaroid-1 { width: 150px; height: 200px; left: 4%;  top: 10px; transform: rotate(-6deg); z-index: 1; }
+.ss-polaroid-2 { width: 130px; height: 170px; right: 6%; top: 30px; transform: rotate(7deg);  z-index: 2; }
+.ss-polaroid-3 { width: 140px; height: 180px; left: 40%; top: 90px; transform: rotate(-2deg); z-index: 3; }
+
+/* Spinner for checkout loading */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(253, 224, 71, 0.3);
+  border-top-color: #fde047;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+  flex-shrink: 0;
+}
