@@ -15,6 +15,132 @@ html, body {
   min-height: 100vh;
 }
 
+/* Responsive container */
+.app-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(12px, 4vw, 32px);
+}
+
+/* Responsive padding for sections */
+.section-responsive {
+  padding: clamp(40px, 8vw, 80px) clamp(12px, 4vw, 32px);
+}
+
+/* Navigation Styles */
+.desktop-nav {
+  display: none;
+  background: #0a0a0a;
+  border-bottom: 2px solid #3f3f46;
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.desktop-nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.desktop-nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.desktop-nav-links a {
+  color: #fafafa;
+  text-decoration: none;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.desktop-nav-links a:hover {
+  color: #fde047;
+}
+
+@media (min-width: 1025px) {
+  .desktop-nav {
+    display: block;
+  }
+}
+
+/* Responsive Grids */
+.responsive-grid-2-4 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 641px) {
+  .responsive-grid-2-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1025px) {
+  .responsive-grid-2-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.responsive-grid-2-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 641px) {
+  .responsive-grid-2-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Hero Desktop Layout */
+.hero-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 1025px) {
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+}
+
+/* Ticket Section Desktop */
+.tiers-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 1025px) {
+  .tiers-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .section-responsive {
+    padding: clamp(24px, 6vw, 40px) clamp(12px, 4vw, 20px);
+  }
+}
+
 button {
   font-family: inherit;
   cursor: pointer;
@@ -76,20 +202,274 @@ input[type="range"]::-moz-range-thumb {
 .ss-marquee-anim     { animation: ss-marquee     28s linear infinite; }
 .ss-marquee-anim-rev { animation: ss-marquee-rev 28s linear infinite; }
 
-/* Polaroid positions */
-.ss-polaroid-1 { width: 150px; height: 200px; left: 4%;  top: 10px; transform: rotate(-6deg); z-index: 1; }
-.ss-polaroid-2 { width: 130px; height: 170px; right: 6%; top: 30px; transform: rotate(7deg);  z-index: 2; }
-.ss-polaroid-3 { width: 140px; height: 180px; left: 40%; top: 90px; transform: rotate(-2deg); z-index: 3; }
+@media (max-width: 768px) {
+  .ss-marquee-anim, .ss-marquee-anim-rev {
+    animation: none;
+  }
+}
 
-/* Spinner for checkout loading */
-@keyframes spin { to { transform: rotate(360deg); } }
-.spin-icon {
+/* Poster-inspired Brush & Grunge */
+.ss-brush-title {
+  background: #fafafa;
+  -webkit-background-clip: text;
+  background-clip: text;
+  position: relative;
   display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(253, 224, 71, 0.3);
-  border-top-color: #fde047;
+}
+
+.ss-brush-title::after {
+  content: "";
+  position: absolute;
+  top: 0; left: -5%; width: 110%; height: 100%;
+  background: url("https://www.transparenttextures.com/patterns/brushed-alum.png");
+  mix-blend-mode: multiply;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.ss-returns-banner {
+  background: #dc2626;
+  color: #fafafa;
+  padding: 4px 24px;
+  transform: rotate(-1deg);
+  display: inline-block;
+  font-family: var(--f-heavy);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: -10px;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.ss-returns-banner::before, .ss-returns-banner::after {
+  content: "";
+  position: absolute;
+  top: 0; width: 20px; height: 100%;
+  background: #dc2626;
+}
+.ss-returns-banner::before { left: -10px; transform: skewX(-15deg); }
+.ss-returns-banner::after { right: -10px; transform: skewX(15deg); }
+
+.ss-doodle-arrow {
+  display: inline-block;
+  transform: rotate(15deg);
+  font-family: var(--f-mono);
+  color: var(--c-yellow);
+}
+
+.ss-card-poster {
+  background: #1a1a1a;
+  border: 2px solid #333;
+  position: relative;
+  overflow: hidden;
+}
+
+.ss-card-poster::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: url("https://www.transparenttextures.com/patterns/asfalt-dark.png");
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+/* Polaroid floating and rotating animations */
+@keyframes ss-float {
+  0% { transform: translateY(0) rotate(var(--base-rot)); }
+  50% { transform: translateY(-15px) rotate(calc(var(--base-rot) + 3deg)); }
+  100% { transform: translateY(0) rotate(var(--base-rot)); }
+}
+
+.ss-polaroid-1 { 
+  --base-rot: -6deg;
+  width: clamp(100px, 15vw, 150px); height: clamp(130px, 20vw, 200px); left: 2%; top: clamp(5px, 2vh, 10px); 
+  z-index: 1; 
+  animation: ss-float 6s ease-in-out infinite;
+}
+.ss-polaroid-2 { 
+  --base-rot: 7deg;
+  width: clamp(85px, 13vw, 130px); height: clamp(110px, 17vw, 170px); right: 3%; top: clamp(15px, 3vh, 30px); 
+  z-index: 2; 
+  animation: ss-float 7s ease-in-out infinite 0.5s;
+}
+.ss-polaroid-3 { 
+  --base-rot: -2deg;
+  width: clamp(95px, 14vw, 140px); height: clamp(120px, 18vw, 180px); left: clamp(30%, 35vw, 45%); top: clamp(60px, 12vh, 90px); 
+  z-index: 3; 
+  animation: ss-float 5.5s ease-in-out infinite 1s;
+}
+
+.ss-polaroid-1:hover, .ss-polaroid-2:hover, .ss-polaroid-3:hover {
+  z-index: 50;
+  transform: scale(1.1) rotate(0deg) !important;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation-play-state: paused;
+}
+
+@media (max-width: 1024px) {
+  .ss-polaroid-1 { display: none; }
+  .ss-polaroid-2 { display: none; }
+  .ss-polaroid-3 { left: 50%; transform: translateX(-50%) rotate(-2deg); top: 20px; animation: none; }
+}
+
+.ss-chalkboard {
+  background: #111;
+  background-image: 
+    radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+  background-size: 24px 24px;
+  border: 10px solid #2a2a2a;
+  border-image: url("https://www.transparenttextures.com/patterns/dark-leather.png") 30 stretch;
+  box-shadow: inset 0 0 50px rgba(0,0,0,1), 0 15px 30px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.ss-chalkboard::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: url("https://www.transparenttextures.com/patterns/chalkboard.png");
+  opacity: 0.2;
+  pointer-events: none;
+}
+.mobile-only-sticky {
+  display: flex;
+  justify-content: space-between;
+}
+
+@media (min-width: 1025px) {
+  .mobile-only-sticky {
+    display: none;
+  }
+}
+
+.ss-hero-smokey {
+  position: relative;
+  background: radial-gradient(circle at 70% 30%, #1a1a1a 0%, #050505 100%);
+  overflow: hidden;
+}
+
+.ss-smoke-container {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.8;
+}
+
+.ss-smoke-particle {
+  position: absolute;
+  background: radial-gradient(circle at center, 
+    rgba(255, 255, 255, 0.15) 0%, 
+    rgba(200, 200, 200, 0.1) 40%,
+    rgba(100, 100, 100, 0.05) 70%,
+    transparent 100%
+  );
+  filter: blur(40px);
   border-radius: 50%;
-  animation: spin 0.9s linear infinite;
-  flex-shrink: 0;
+  animation: ss-smoke-drift var(--d) infinite ease-in-out alternate;
+  mix-blend-mode: screen;
+}
+
+/* extra ember-like glow */
+.ss-smoke-particle:nth-child(even) {
+  background: radial-gradient(circle at center, 
+    rgba(255, 100, 50, 0.05) 0%, 
+    transparent 70%
+  );
+}
+
+@keyframes ss-smoke-drift {
+  0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.4; }
+  50% { transform: translate(var(--tx), var(--ty)) scale(1.4) rotate(90deg); opacity: 0.8; }
+  100% { transform: translate(calc(var(--tx) * 1.2), calc(var(--ty) * 0.5)) scale(0.9) rotate(180deg); opacity: 0.3; }
+}
+
+.ss-clean-title {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 0 30px rgba(255,255,255,0.1);
+}
+
+.ss-glass-cta {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px 32px;
+  color: #fafafa;
+  font-family: var(--f-display);
+  font-size: 20px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.ss-glass-cta:hover {
+  background: var(--c-yellow);
+  color: var(--c-bg);
+  box-shadow: 0 0 40px var(--c-yellow-glow);
+}
+
+.ss-collage-polaroid {
+  background: #fff;
+  padding: 8px 8px 32px 8px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ss-collage-polaroid:hover {
+  transform: scale(1.05) rotate(0deg) translateY(-10px) !important;
+  z-index: 100 !important;
+}
+
+@keyframes ss-flicker {
+  0% { transform: scaleY(1) rotate(-1deg); filter: brightness(1); }
+  25% { transform: scaleY(1.1) rotate(1deg); filter: brightness(1.2); }
+  50% { transform: scaleY(0.9) rotate(-2deg); filter: brightness(0.9); }
+  75% { transform: scaleY(1.15) rotate(2deg); filter: brightness(1.3); }
+  100% { transform: scaleY(1) rotate(0deg); filter: brightness(1); }
+}
+
+@keyframes ss-flame-float {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+.ss-flame-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.ss-hero-title {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.75;
+  letter-spacing: -0.06em;
+  font-family: 'Bowlby One', cursive;
+  text-transform: uppercase;
+}
+
+.ss-title-fire {
+  font-size: clamp(80px, 18vw, 200px);
+  color: #fff;
+  margin-left: -0.05em;
+}
+
+.ss-title-row {
+  display: flex;
+  align-items: center;
+  margin-top: -0.1em;
+}
+
+.ss-title-amp {
+  font-size: clamp(60px, 14vw, 150px);
+  color: var(--yellow);
+  margin-right: 0.1em;
+  font-style: italic;
+  filter: drop-shadow(0 0 15px rgba(253, 224, 71, 0.4));
+}
+
+.ss-title-smoke {
+  font-size: clamp(80px, 18vw, 200px);
+  color: #fff;
 }
