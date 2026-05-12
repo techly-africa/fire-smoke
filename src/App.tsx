@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   EVENT, TIERS, WHATS_NEW, GAMES, PRIZES, PRIZE_REWARDS,
   SCHEDULE, GALLERY, TESTIMONIALS, FAQ, HOSTS, SPONSORS, QUIZ,
 } from './data';
-import { useCountdown } from './hooks/useCountdown';
 import { TornDivider } from './components/TornDivider';
 import { SectionHeader } from './components/SectionHeader';
 import { Checkout } from './components/Checkout';
+import { AdminDashboard } from './components/AdminDashboard';
+import { AdminLogin } from './components/AdminLogin';
+import { bookingService } from './services/bookingService';
 import { C, F } from './tokens';
 
 const HEAT_LABELS  = ['MILD', 'WARM', 'SPICY', 'HEAT', 'INFERNO'] as const;
@@ -25,10 +27,19 @@ const Logo = () => (
 );
 
 export function App() {
-  const cd = useCountdown(EVENT.dateISO);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('admin') === 'true') {
+      setIsAdmin(true);
+    }
+  }, []);
+
 
   const [selectedTierId, setSelectedTierId] = useState('early');
-  const [qty, setQty] = useState(1);
+  const [qty] = useState(1);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [heat, setHeat] = useState(3);
   const [carouselIdx, setCarouselIdx] = useState(0);
@@ -38,7 +49,60 @@ export function App() {
   const [quizScore, setQuizScore] = useState(0);
   const [quizDone, setQuizDone] = useState(false);
 
-  const tier = TIERS.find(t => t.id === selectedTierId)!;
+  // Capacity states
+  const [capacity, setCapacity] = useState({ sold: 0, max: 200 });
+  const [isSoldOut, setIsSoldOut] = useState(false);
+  const [dynamicTiers, setDynamicTiers] = useState(TIERS);
+
+  useEffect(() => {
+    async function checkCapacity() {
+      try {
+        const [bookings, settings] = await Promise.all([
+          bookingService.fetchBookings(),
+          bookingService.getSettings()
+        ]);
+        const confirmed = bookings.filter(b => b.payment_status === 'CONFIRMED').reduce((acc, b) => acc + b.quantity, 0);
+        const max = settings.find(s => s.key === 'max_capacity');
+        const maxVal = max ? Number(max.value) : 200;
+        
+        setCapacity({ sold: confirmed, max: maxVal });
+        if (confirmed >= maxVal) setIsSoldOut(true);
+
+        // Update Tiers
+        const ebActive = settings.find(s => s.key === 'early_bird_active')?.value === 'true';
+        const ebPrice = Number(settings.find(s => s.key === 'early_bird_price')?.value || 15000);
+        const ebDeadline = settings.find(s => s.key === 'early_bird_deadline')?.value || 'May 22';
+
+        let newTiers = TIERS.map(t => {
+          if (t.id === 'early') {
+            return { ...t, price: ebPrice, sub: `Pay before ${ebDeadline}` };
+          }
+          return t;
+        });
+
+        if (!ebActive) {
+          newTiers = newTiers.filter(t => t.id !== 'early');
+          // If selected tier was early and it's gone, switch to regular
+          if (selectedTierId === 'early') setSelectedTierId('regular');
+        }
+
+        setDynamicTiers(newTiers);
+
+      } catch (err) {
+        console.error('Capacity check failed');
+      }
+    }
+    checkCapacity();
+  }, [selectedTierId]);
+
+  if (isAdmin) {
+    if (!isAuthenticated) {
+      return <AdminLogin onLogin={() => setIsAuthenticated(true)} />;
+    }
+    return <AdminDashboard />;
+  }
+
+  const tier = dynamicTiers.find(t => t.id === selectedTierId) || dynamicTiers[0];
   const total = tier.id === 'duo' ? tier.price : tier.price * qty;
   const heatLabel = HEAT_LABELS[heat - 1];
   const heatColor = HEAT_COLORS[heat - 1];
@@ -63,7 +127,7 @@ export function App() {
     setQuizDone(false);
   }
   return (
-    <div style={{ background: `radial-gradient(circle at 50% 30%, #1a1a1a 0%, ${C.bg} 70%)`, color: C.text, fontFamily: F.mono, paddingBottom: 'clamp(40px, 10vw, 80px)', minHeight: '100vh', overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ background: `radial-gradient(circle at 50% 30%, #1a1a1a 0%, ${C.bg} 70%)`, color: C.text, fontFamily: F.mono, paddingBottom: 'clamp(40px, 10vw, 80px)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <div style={{ background: C.yellow, color: C.bg, padding: 'clamp(6px, 1.5vw, 12px) 0', overflow: 'hidden', borderTop: `3px solid ${C.bg}`, borderBottom: `3px solid ${C.bg}` }}>
         <div className="ss-marquee-anim" style={{ whiteSpace: 'nowrap', display: 'inline-block' }}>
           {Array.from({ length: 4 }).map((_, k) => (
@@ -74,8 +138,37 @@ export function App() {
         </div>
       </div>
 
+      {/* ── MOBILE NAV (TOP) ── */}
+      <nav className="mobile-nav-top" style={{ 
+        position: 'sticky', 
+        top: 0, 
+        zIndex: 1000, 
+        background: 'rgba(10, 10, 10, 0.85)', 
+        backdropFilter: 'blur(12px)',
+        borderBottom: `1px solid rgba(255,255,255,0.1)`,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '12px 20px'
+      }}>
+        <Logo />
+        <button
+          style={{ background: C.pink, color: C.bg, border: 'none', padding: '6px 12px', fontFamily: F.heavy, fontSize: 10, letterSpacing: 1 }}
+          onClick={() => setCheckoutOpen(true)}
+        >
+          RSVP
+        </button>
+      </nav>
+
       {/* ── DESKTOP NAV ── */}
-      <nav className="desktop-nav">
+      <nav className="desktop-nav" style={{ 
+        position: 'sticky', 
+        top: 0, 
+        zIndex: 1000, 
+        background: 'rgba(10, 10, 10, 0.85)', 
+        backdropFilter: 'blur(12px)',
+        borderBottom: `1px solid rgba(255,255,255,0.1)`
+      }}>
         <div className="desktop-nav-inner">
           <Logo />
           <ul className="desktop-nav-links">
@@ -141,7 +234,7 @@ export function App() {
               </p>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginTop: 40 }}>
-                <button className="ss-glass-cta ss-hover-lift" onClick={() => setCheckoutOpen(true)}>
+                <button className="ss-glass-cta ss-hover-lift" onClick={() => document.getElementById('tickets')?.scrollIntoView({ behavior: 'smooth' })}>
                   RSVP &amp; PAY NOW ↗
                 </button>
                 <div style={{ fontFamily: F.mono, fontSize: 11, color: C.dim, letterSpacing: 1 }}>
@@ -150,13 +243,13 @@ export function App() {
               </div>
             </div>
 
-            <div style={{ position: 'relative', height: 'clamp(400px, 60vh, 600px)' }}>
+            <div className="ss-hero-collage">
               {[
                 { src: '/photos/p13-peace.jpeg',       cap: 'VOL.01 ✌',      rot: -8,   t: 0,   l: 0,   z: 1 },
                 { src: '/photos/p11-chef-bandana.jpeg', cap: 'THE PITMASTER', rot: 12,   t: 60,  l: 120, z: 3 },
                 { src: '/photos/p12-kamado.jpeg',       cap: 'KAMADO HOT',    rot: -4,   t: 180, l: 30,  z: 2 },
-              ].map(({ src, cap, rot, t, l, z }, idx) => (
-                <div key={src} className="ss-collage-polaroid" style={{ 
+              ].map(({ src, cap, rot, t, l, z }) => (
+                <div key={src} className="ss-hero-polaroid" style={{ 
                   position: 'absolute', 
                   top: t, left: l, 
                   transform: `rotate(${rot}deg)`, 
@@ -213,11 +306,11 @@ export function App() {
       </section>
 
       {/* ── GAMES ── */}
-      <section id="games" style={{ width: '100%', background: C.pink, color: C.bg }}>
-        <div className="section-responsive app-container">
+      <section id="games" style={{ width: '100%', background: C.pink, color: C.bg, position: 'relative', overflow: 'hidden' }}>
+        <div className="section-responsive app-container" style={{ position: 'relative', zIndex: 5 }}>
           <SectionHeader title="GAMES ON SITE" sub="// pick_your_poison()" color={C.bg} />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', border: `1px solid ${C.bg}`, background: C.bg }}>
-            {GAMES.map((g, i) => (
+            {GAMES.map((g) => (
               <div key={g.name} style={{ padding: '16px', border: `1px solid rgba(255,255,255,0.1)`, textAlign: 'center' }}>
                 <div style={{ fontFamily: F.mono, fontSize: 9, color: C.yellow, opacity: 0.8 }}>{g.tag.toUpperCase()}</div>
                 <div style={{ fontFamily: F.heavy, fontSize: 15, color: C.text, marginTop: 4 }}>{g.name}</div>
@@ -231,6 +324,22 @@ export function App() {
             </div>
           </div>
         </div>
+
+        {/* Jenga Decoration */}
+        <img 
+          src="/photos/pngtree-wooden-jenga-tower-png-image_16011186.png" 
+          alt="Jenga Tower" 
+          style={{ 
+            position: 'absolute', 
+            bottom: -20, 
+            right: -20, 
+            width: 'clamp(150px, 25vw, 300px)', 
+            transform: 'rotate(-5deg)',
+            zIndex: 1,
+            opacity: 0.9,
+            pointerEvents: 'none'
+          }} 
+        />
       </section>
 
       {/* ── PRIZES ── */}
@@ -387,7 +496,7 @@ export function App() {
           <SectionHeader title="GET YOUR PASS" sub="// reserve.exe" color={C.bg} />
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginTop: 32 }}>
-            {TIERS.map(t => {
+            {dynamicTiers.map(t => {
               const active = selectedTierId === t.id;
               const posterColors = {
                 early: C.yellow,
@@ -398,19 +507,87 @@ export function App() {
               const cardColor = (posterColors as any)[t.id] || C.yellow;
               
               return (
-                <button key={t.id} onClick={() => setSelectedTierId(t.id)}
-                  style={{ display: 'flex', flexDirection: 'column', padding: 24, background: cardColor, color: C.bg, border: active ? `6px solid ${C.bg}` : `2px solid ${C.bg}`, textAlign: 'center', cursor: 'pointer', position: 'relative', boxShadow: active ? `0 12px 0 ${C.bg}` : `0 6px 0 ${C.bg}`, transition: 'all 0.1s' }}>
-                  <div style={{ fontFamily: F.heavy, fontSize: 18, textTransform: 'uppercase', letterSpacing: 1 }}>{t.name}</div>
-                  <div style={{ fontSize: 32, margin: '12px 0' }}>{t.id === 'early' ? '🎟️' : t.id === 'duo' ? '👥' : t.id === 'gate' ? '🕒' : '🎟️'}</div>
-                  <div style={{ fontFamily: F.display, fontSize: 32, lineHeight: 1 }}>{t.price.toLocaleString()} <span style={{ fontSize: 14, fontFamily: F.mono }}>RWF</span></div>
-                  <div style={{ fontFamily: F.mono, fontSize: 10, marginTop: 12, fontWeight: 700, opacity: 0.8 }}>{t.sub.toUpperCase()}</div>
-                  {active && <div style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', background: C.bg, color: cardColor, padding: '2px 10px', fontSize: 10, fontFamily: F.heavy }}>SELECTED</div>}
-                </button>
+                <div key={t.id} style={{ display: 'flex', flexDirection: 'column' }}>
+                  <button onClick={() => !isSoldOut && setSelectedTierId(t.id)}
+                    disabled={isSoldOut}
+                    style={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      padding: 24, 
+                      background: isSoldOut ? '#333' : cardColor, 
+                      color: isSoldOut ? C.dim : C.bg, 
+                      border: active && !isSoldOut ? `6px solid ${C.bg}` : `2px solid ${C.bg}`, 
+                      textAlign: 'center', 
+                      cursor: isSoldOut ? 'not-allowed' : 'pointer', 
+                      position: 'relative', 
+                      boxShadow: active && !isSoldOut ? `0 12px 0 ${C.bg}` : `0 6px 0 ${C.bg}`, 
+                      transition: 'all 0.1s',
+                      width: '100%',
+                      opacity: isSoldOut && !active ? 0.5 : 1,
+                      flex: 1
+                    }}>
+                    <div style={{ fontFamily: F.heavy, fontSize: 18, textTransform: 'uppercase', letterSpacing: 1 }}>{t.name}</div>
+                    <div style={{ fontSize: 32, margin: '12px 0' }}>{isSoldOut ? '🚫' : t.id === 'early' ? '🎟️' : t.id === 'duo' ? '👥' : t.id === 'gate' ? '🕒' : '🎟️'}</div>
+                    <div style={{ fontFamily: F.display, fontSize: 32, lineHeight: 1 }}>{t.price.toLocaleString()} <span style={{ fontSize: 14, fontFamily: F.mono }}>RWF</span></div>
+                    <div style={{ fontFamily: F.mono, fontSize: 10, marginTop: 12, fontWeight: 700, opacity: 0.8 }}>{t.sub.toUpperCase()}</div>
+                    {active && !isSoldOut && <div style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', background: C.bg, color: cardColor, padding: '2px 10px', fontSize: 10, fontFamily: F.heavy }}>SELECTED</div>}
+                  </button>
+                  
+                  {active && !isSoldOut && (
+                    <button 
+                      className="ss-hover-lift"
+                      onClick={() => setCheckoutOpen(true)}
+                      style={{ 
+                        marginTop: 16, 
+                        background: C.bg, 
+                        color: cardColor, 
+                        border: `3px solid ${cardColor}`, 
+                        padding: '12px', 
+                        fontFamily: F.heavy, 
+                        fontSize: 14, 
+                        cursor: 'pointer',
+                        letterSpacing: 1,
+                        animation: 'ss-fade-in 0.3s'
+                      }}
+                    >
+                      PAY NOW ↗
+                    </button>
+                  )}
+                </div>
               );
             })}
           </div>
 
-          <div style={{ marginTop: 40, padding: 32, background: C.bg, color: C.text, border: `4px solid ${C.yellow}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 24 }}>
+          {/* Capacity Urgency Bar */}
+          <div style={{ marginTop: 40, background: 'rgba(0,0,0,0.2)', padding: 20, borderRadius: 8, border: `1px solid ${isSoldOut ? C.pink : 'rgba(255,255,255,0.1)'}` }}>
+             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 12, fontFamily: F.mono }}>
+                <div>
+                  <div style={{ fontSize: 10, color: C.dim, letterSpacing: 2, fontWeight: 700, marginBottom: 4 }}>EVENT_AVAILABILITY</div>
+                  <div style={{ fontSize: 24, fontFamily: F.display, color: isSoldOut ? C.pink : C.bg }}>
+                    {isSoldOut ? 'SOLD OUT' : `${capacity.max - capacity.sold} SEATS LEFT`}
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 10, color: C.dim, letterSpacing: 2, fontWeight: 700, marginBottom: 4 }}>TICKETS_SOLD</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: C.bg }}>{capacity.sold} / {capacity.max}</div>
+                </div>
+             </div>
+             <div style={{ width: '100%', height: 12, background: 'rgba(0,0,0,0.3)', borderRadius: 6, overflow: 'hidden', border: `1px solid ${C.bg}` }}>
+                <div style={{ 
+                  width: `${(capacity.sold / capacity.max) * 100}%`, 
+                  height: '100%', 
+                  background: isSoldOut ? C.pink : C.bg,
+                  transition: 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)'
+                }} />
+             </div>
+             {!isSoldOut && capacity.max - capacity.sold <= 20 && (
+               <div style={{ marginTop: 12, color: C.pink, fontSize: 12, fontWeight: 700, textAlign: 'center', animation: 'ss-pulse 2s infinite' }}>
+                 ⚠️ HURRY! LESS THAN 20 SEATS REMAINING.
+               </div>
+             )}
+          </div>
+
+          <div style={{ marginTop: 40, padding: 32, background: C.bg, color: C.text, border: `4px solid ${C.yellow}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 24, opacity: isSoldOut ? 0.8 : 1 }}>
             <div>
               <div style={{ fontFamily: F.mono, fontSize: 12, color: C.yellow, letterSpacing: 2, fontWeight: 700 }}>PAYMENT DETAILS:</div>
               <div style={{ fontFamily: F.heavy, fontSize: 24, marginTop: 8 }}>{EVENT.payTo}</div>
@@ -420,9 +597,23 @@ export function App() {
               <div style={{ fontFamily: F.mono, fontSize: 12, color: C.yellow, letterSpacing: 2, fontWeight: 700 }}>TOTAL DUE:</div>
               <div style={{ fontFamily: F.display, fontSize: 44, color: C.pink }}>{total.toLocaleString()} <span style={{ fontSize: 16 }}>RWF</span></div>
             </div>
-            <button className="ss-hover-lift" style={{ width: '100%', padding: 24, background: C.yellow, color: C.bg, border: `4px solid ${C.bg}`, fontFamily: F.display, fontSize: 24, cursor: 'pointer', letterSpacing: 1, boxShadow: `0 8px 0 ${C.bg}` }}
+            <button 
+              className={isSoldOut ? "" : "ss-hover-lift"} 
+              disabled={isSoldOut}
+              style={{ 
+                width: '100%', 
+                padding: 24, 
+                background: isSoldOut ? '#333' : C.yellow, 
+                color: isSoldOut ? C.dim : C.bg, 
+                border: `4px solid ${C.bg}`, 
+                fontFamily: F.display, 
+                fontSize: 24, 
+                cursor: isSoldOut ? 'not-allowed' : 'pointer', 
+                letterSpacing: 1, 
+                boxShadow: isSoldOut ? 'none' : `0 8px 0 ${C.bg}` 
+              }}
               onClick={() => setCheckoutOpen(true)}>
-              RSVP &amp; PAY NOW ↗
+              {isSoldOut ? 'SOLD OUT - WAITLIST ONLY' : 'RSVP & PAY NOW ↗'}
             </button>
           </div>
         </div>
