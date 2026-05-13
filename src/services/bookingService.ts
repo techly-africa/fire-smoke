@@ -90,9 +90,10 @@ export const bookingService = {
 
     if (error) throw error;
     
-    // Send email via Resend
+    // Send email via Resend with dynamic CMS data
     try {
-      await mailService.sendTicket(data as Booking);
+      const cms = await this.getAllCms();
+      await mailService.sendTicket(data as Booking, cms.EVENT);
     } catch (mailErr) {
       console.error('Failed to send ticket email:', mailErr);
       // We don't throw here to avoid breaking the UI, but we log it

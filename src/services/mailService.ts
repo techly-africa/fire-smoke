@@ -2,7 +2,14 @@ import { supabase } from '../lib/supabase';
 import { Booking } from './bookingService';
 
 export const mailService = {
-  async sendTicket(booking: Booking) {
+  async sendTicket(booking: Booking, eventData?: any) {
+    const EVENT = eventData || {
+      name: 'Fire & Smoke',
+      dateLabel: 'MAY 30, 2026',
+      location: 'MT KIGALI',
+      timeLabel: '2:00 PM'
+    };
+
     const html = `
       <!DOCTYPE html>
       <html>
@@ -26,8 +33,8 @@ export const mailService = {
       <body>
         <div class="container">
           <div class="header">
-            <div class="logo">FIRE <span>&</span> SMOKE</div>
-            <p style="color: #71717a; margin-top: 10px; font-size: 14px;">Your ticket on behalf of Fire & Smoke</p>
+            <div class="logo">${EVENT.name.toUpperCase()} <span>&</span> SMOKE</div>
+            <p style="color: #71717a; margin-top: 10px; font-size: 14px;">Your ticket on behalf of ${EVENT.name}</p>
           </div>
 
           <div class="ticket-info">
@@ -41,9 +48,9 @@ export const mailService = {
           <div class="event-details">
             <div style="font-weight: 800; font-size: 14px; margin-bottom: 8px;">EVENT_LOGISTICS</div>
             <div style="font-size: 13px; color: #a1a1aa; line-height: 1.5;">
-              📅 <span class="highlight">MAY 30, 2026</span><br>
-              📍 <span class="highlight">MT KIGALI</span><br>
-              🕒 <span class="highlight">2:00 PM</span>
+              📅 <span class="highlight">${EVENT.dateLabel.toUpperCase()}</span><br>
+              📍 <span class="highlight">${EVENT.location.toUpperCase()}</span><br>
+              🕒 <span class="highlight">${EVENT.timeLabel.split('—')[0].trim().toUpperCase()}</span>
             </div>
           </div>
 

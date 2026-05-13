@@ -8,6 +8,7 @@ interface Props {
   qty: number;
   total: number;
   onClose: () => void;
+  eventData: any;
 }
 
 interface FormState {
@@ -18,7 +19,7 @@ interface FormState {
   reference: string;
 }
 
-export function Checkout({ tier, qty, total, onClose }: Props) {
+export function Checkout({ tier, qty, total, onClose, eventData }: Props) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [form, setForm] = useState<FormState>({ name: '', email: '', phone: '', friend: '', reference: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,7 +59,7 @@ export function Checkout({ tier, qty, total, onClose }: Props) {
       >
         {/* header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-          <span style={{ fontFamily: F.heavy, fontSize: 'clamp(12px, 3vw, 16px)', color: C.yellow, letterSpacing: 1 }}>FIRE &amp; SMOKE</span>
+          <span style={{ fontFamily: F.heavy, fontSize: 'clamp(12px, 3vw, 16px)', color: C.yellow, letterSpacing: 1 }}>{eventData.name.toUpperCase()}</span>
           <button style={{ background: 'transparent', border: 'none', color: C.dim, fontFamily: F.mono, fontSize: 'clamp(10px, 2.5vw, 12px)', cursor: 'pointer', letterSpacing: 1.5, fontWeight: 700 }} onClick={onClose}>× CLOSE</button>
         </div>
 
@@ -122,7 +123,7 @@ export function Checkout({ tier, qty, total, onClose }: Props) {
                 <div style={{ marginBottom: 24 }}>
                   <p style={{ fontSize: 13, color: C.dim, marginBottom: 16, lineHeight: 1.4 }}>Tap the button below to dial the payment code automatically on your phone.</p>
                   <a
-                    href={`tel:*182*1*1*0785608546*${total}%23`}
+                    href={`tel:*182*1*1*${eventData.payTo}*${total}%23`}
                     style={{
                       display: 'block',
                       background: C.yellow,
@@ -139,15 +140,15 @@ export function Checkout({ tier, qty, total, onClose }: Props) {
                     DIAL TO PAY ↗
                   </a>
                   <div style={{ textAlign: 'center', fontSize: 11, color: C.dim }}>
-                    Code: <span style={{ color: C.text }}>*182*1*1*0785608546*{total}#</span>
+                    Code: <span style={{ color: C.text }}>*182*1*1*{eventData.payTo}*{total}#</span>
                   </div>
                 </div>
               ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '8px 12px', marginBottom: 24 }}>
                   <span style={{ color: C.dim, fontSize: 12 }}>NUMBER:</span>
-                  <span style={{ fontWeight: 700, fontSize: 20 }}>0785 608 546</span>
+                  <span style={{ fontWeight: 700, fontSize: 20 }}>{eventData.payTo}</span>
                   <span style={{ color: C.dim, fontSize: 12 }}>NAME:</span>
-                  <span style={{ fontWeight: 700, fontSize: 20 }}>Collins Muoki</span>
+                  <span style={{ fontWeight: 700, fontSize: 20 }}>{eventData.payName}</span>
                 </div>
               )}
 

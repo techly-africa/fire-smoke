@@ -43,10 +43,10 @@ const CREW_COLORS = ['#fde047', '#f43f5e', '#fb923c'] as const;
 
 const Logo = () => (
   <div style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', lineHeight: 0.8, letterSpacing: -1, fontFamily: 'Bowlby One', fontSize: 14 }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-    <div style={{ color: '#fff' }}>FIRE</div>
+    <div style={{ color: '#fff' }}>{staticData.EVENT.name.split(' & ')[0].toUpperCase()}</div>
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <span style={{ color: '#fde047', marginRight: 4, fontSize: '80%', fontStyle: 'italic' }}>&amp;</span>
-      <span style={{ color: '#fff' }}>SMOKE</span>
+      <span style={{ color: '#fff' }}>{staticData.EVENT.name.split(' & ')[1].toUpperCase()}</span>
     </div>
   </div>
 );
@@ -116,6 +116,7 @@ export function App() {
       QUIZ: staticData.QUIZ,
     };
   });
+
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -326,9 +327,9 @@ export function App() {
           <div className="hero-grid" style={{ alignItems: 'center' }}>
             <div className="ss-clean-title">
               <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
-                <span style={{ color: C.yellow, fontFamily: F.mono, fontSize: 12, letterSpacing: 4, fontWeight: 700 }}>VOL · 02</span>
+                <span style={{ color: C.yellow, fontFamily: F.mono, fontSize: 12, letterSpacing: 4, fontWeight: 700 }}>{EVENT.edition}</span>
                 <span style={{ color: C.dim, opacity: 0.5 }}>/</span>
-                <span style={{ color: C.pink, fontFamily: F.mono, fontSize: 12, letterSpacing: 4, fontWeight: 700 }}>RWA-26</span>
+                <span style={{ color: C.pink, fontFamily: F.mono, fontSize: 12, letterSpacing: 4, fontWeight: 700 }}>{EVENT.tagline}</span>
               </div>
 
               <h1 className="ss-hero-title">
@@ -340,7 +341,7 @@ export function App() {
               </h1>
 
               <p style={{ fontFamily: F.mono, fontSize: 'clamp(14px, 1.4vw, 18px)', lineHeight: 1.6, color: '#a1a1aa', marginTop: 32, maxWidth: 480, letterSpacing: -0.5 }}>
-                A daytime bbq experience under the pines. <span style={{ color: C.yellow }}>Limited capacity.</span> High-fire proteins, daytime sets, and the games we love.
+                {EVENT.description || 'A daytime bbq experience under the pines.'} <span style={{ color: C.yellow }}>Limited capacity.</span> High-fire proteins, daytime sets, and the games we love.
               </p>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginTop: 40 }}>
@@ -348,7 +349,7 @@ export function App() {
                   RSVP &amp; PAY NOW ↗
                 </button>
                 <div style={{ fontFamily: F.mono, fontSize: 11, color: C.dim, letterSpacing: 1 }}>
-                  MAY 30 / MT KIGALI / 2PM
+                  {EVENT.dateLabel.split(' ')[1]} {EVENT.dateLabel.split(' ')[2]} / {EVENT.location.split('·')[0]} / {EVENT.timeLabel.split('—')[0]}
                 </div>
               </div>
             </div>
@@ -360,23 +361,10 @@ export function App() {
                 onMouseEnter={() => setIsHoveringHero(true)}
                 onMouseLeave={() => setIsHoveringHero(false)}
               >
-                {[
-                  { src: '/photos/p13-peace.jpeg', cap: 'VOL.01 ✌' },
-                  { src: '/photos/p11-chef-bandana.jpeg', cap: 'THE PITMASTER' },
-                  { src: '/photos/p12-kamado.jpeg', cap: 'KAMADO HOT' },
-                  { src: '/photos/p03-grill-smile.jpeg', cap: 'SMILE & GRILL' },
-                  { src: '/photos/image.png', cap: 'THE GRILL' },
-                  { src: '/photos/p14-sitting.jpeg', cap: 'RELAX' },
-                  { src: '/photos/p04-three-friends.jpeg', cap: 'THE FAM' },
-                  { src: '/photos/p08-rainy-group.jpeg', cap: 'RAINTY VIBES' },
-                  { src: '/photos/p01-grill-portrait.jpeg', cap: 'OPEN FLAME' },
-                  { src: '/photos/p07-crowd.jpeg', cap: 'THE VIBE' },
-                  { src: '/photos/p09-picnic.jpeg', cap: 'PICNIC SET' },
-                  { src: '/photos/p05-wide-forest.jpeg', cap: 'MT KIGALI' },
-                ].map(({ src, cap }) => (
+                {GALLERY.map(({ src, caption }: any) => (
                   <div key={src} className="ss-hero-polaroid">
-                    <img src={src} alt={cap} style={{ width: '100%', height: 320, objectFit: 'cover', display: 'block' }} />
-                    <div style={{ marginTop: 12, textAlign: 'center', fontFamily: F.mono, fontSize: 11, fontWeight: 700, color: '#000', letterSpacing: 1 }}>{cap}</div>
+                    <img src={src} alt={caption} style={{ width: '100%', height: 320, objectFit: 'cover', display: 'block' }} />
+                    <div style={{ marginTop: 12, textAlign: 'center', fontFamily: F.mono, fontSize: 11, fontWeight: 700, color: '#000', letterSpacing: 1 }}>{caption.toUpperCase()}</div>
                   </div>
                 ))}
                 {/* Spacer to prevent cutting off the last item */}
@@ -892,8 +880,8 @@ export function App() {
         </div>
         <div style={{ padding: 32, background: C.bg, color: C.yellow, border: `4px solid ${C.bg}`, boxShadow: `12px 12px 0 ${C.yellow}` }}>
           {[
-            { k: 'LOC', v: 'Fazenda Zenga · Mt Kigali pines' },
-            { k: 'WHEN', v: 'SAT 30 MAY · 2PM' },
+            { k: 'LOC', v: `${EVENT.location} · ${EVENT.city}` },
+            { k: 'WHEN', v: `${EVENT.dateLabel} · ${EVENT.timeLabel.split('—')[0]}` },
           ].map(({ k, v }: { k: string, v: string }) => (
             <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: `1px dashed ${C.dashed}` }}>
               <span style={{ fontFamily: F.mono, fontSize: 12, letterSpacing: 2, fontWeight: 700 }}>{k}</span>
@@ -938,8 +926,8 @@ export function App() {
   {/* ── FOOTER ── */ }
   <footer style={{ width: '100%', background: C.bg, borderTop: `3px solid ${C.yellow}` }}>
     <div className="app-container" style={{ padding: 'clamp(40px, 8vw, 64px) clamp(12px, 4vw, 32px) clamp(100px, 20vw, 140px)', textAlign: 'center' }}>
-      <div style={{ fontFamily: F.display, fontSize: 'clamp(32px, 8vw, 48px)', color: C.text, letterSpacing: -0.5 }}>FIRE &amp; SMOKE</div>
-      <div style={{ fontFamily: F.mono, fontSize: 12, color: C.dim, marginTop: 10, letterSpacing: 1 }}>© 2026 · KIGALI · NOT JUST A BBQ</div>
+      <div style={{ fontFamily: F.display, fontSize: 'clamp(32px, 8vw, 48px)', color: C.text, letterSpacing: -0.5 }}>{EVENT.name.toUpperCase()}</div>
+      <div style={{ fontFamily: F.mono, fontSize: 12, color: C.dim, marginTop: 10, letterSpacing: 1 }}>© 2026 · {EVENT.city.split(',')[0].toUpperCase()} · NOT JUST A BBQ</div>
       <div style={{ fontFamily: F.mono, fontSize: 12, color: C.dim, marginTop: 10, letterSpacing: 1 }}>{EVENT.ig} · {EVENT.whatsapp}</div>
       <div style={{ fontFamily: F.mono, fontSize: 11, color: C.dim, marginTop: 32, letterSpacing: 0.5, opacity: 0.8 }}>
         Built & Maintained by <a href="https://www.avel.africa" target="_blank" rel="noopener noreferrer" style={{ color: C.text, textDecoration: 'none', borderBottom: `1px solid ${C.dashed}` }}>avel Africa</a> [www.avel.africa]
@@ -951,7 +939,7 @@ export function App() {
   <div className="mobile-only-sticky" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: C.bg, borderTop: `3px solid ${C.yellow}`, padding: 'clamp(8px, 2vw, 14px) clamp(10px, 3vw, 20px)', alignItems: 'center', zIndex: 50, gap: 10 }}>
     <div>
       <div style={{ fontFamily: F.mono, fontSize: 8, letterSpacing: 1.5, color: C.yellow, fontWeight: 700 }}>FROM</div>
-      <div style={{ fontFamily: F.heavy, fontSize: 'clamp(14px, 4vw, 18px)', color: C.text, lineHeight: 1.1 }}>15,000 RWF</div>
+      <div style={{ fontFamily: F.heavy, fontSize: 'clamp(14px, 4vw, 18px)', color: C.text, lineHeight: 1.1 }}>{Math.min(...TIERS.map((t: any) => t.price)).toLocaleString()} RWF</div>
     </div>
     <button style={{ background: C.pink, color: C.bg, border: 'none', padding: 'clamp(10px, 2vw, 14px) clamp(12px, 3vw, 20px)', fontFamily: F.heavy, fontSize: 'clamp(11px, 2vw, 14px)', letterSpacing: 1.5, cursor: 'pointer', whiteSpace: 'nowrap' }}
       onClick={() => setCheckoutOpen(true)}>RSVP ↗</button>
@@ -960,7 +948,7 @@ export function App() {
   {/* ── CHECKOUT MODAL ── */ }
   {
     checkoutOpen && (
-      <Checkout tier={tier} qty={qty} total={total} onClose={() => setCheckoutOpen(false)} />
+      <Checkout tier={tier} qty={qty} total={total} onClose={() => setCheckoutOpen(false)} eventData={EVENT} />
     )
   }
 
