@@ -212,14 +212,8 @@ input[type="range"]::-moz-range-thumb {
   from { transform: translateX(-25%); }
   to   { transform: translateX(0); }
 }
-.ss-marquee-anim     { animation: ss-marquee     28s linear infinite; }
-.ss-marquee-anim-rev { animation: ss-marquee-rev 28s linear infinite; }
-
-@media (max-width: 768px) {
-  .ss-marquee-anim, .ss-marquee-anim-rev {
-    animation: none;
-  }
-}
+.ss-marquee-anim     { animation: ss-marquee     28s linear infinite; will-change: transform; }
+.ss-marquee-anim-rev { animation: ss-marquee-rev 28s linear infinite; will-change: transform; }
 
 /* Poster-inspired Brush & Grunge */
 .ss-brush-title {
