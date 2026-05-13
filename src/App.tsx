@@ -347,9 +347,9 @@ export function App() {
                   { src: '/photos/p15-vibes.jpeg',        cap: 'SUNDAY SERVICE' },
                 ].map(({ src, cap }) => (
                   <div key={src} className="ss-hero-polaroid" style={{ 
-                    width: 'clamp(220px, 30vw, 320px)'
+                    width: 'clamp(260px, 35vw, 380px)'
                   }}>
-                    <img src={src} alt={cap} style={{ width: '100%', height: 'clamp(240px, 35vw, 340px)', objectFit: 'cover', display: 'block' }} />
+                    <img src={src} alt={cap} style={{ width: '100%', height: 'clamp(280px, 40vw, 400px)', objectFit: 'cover', display: 'block' }} />
                     <div style={{ marginTop: 12, textAlign: 'center', fontFamily: F.mono, fontSize: 11, fontWeight: 700, color: C.bg, letterSpacing: 1 }}>{cap}</div>
                   </div>
                 ))}
