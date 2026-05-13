@@ -129,9 +129,11 @@ html, body {
 @media (min-width: 1025px) {
   .hero-grid {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
+    grid-template-columns: 1.1fr 0.9fr;
     gap: 48px;
-    align-items: start;
+    align-items: center;
+    max-width: 100%;
+    overflow: hidden;
   }
 }
 
@@ -293,10 +295,11 @@ input[type="range"]::-moz-range-thumb {
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   gap: 24px;
-  padding: 40px clamp(20px, 10vw, 100px);
+  padding: 40px 20px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   cursor: grab;
+  max-width: 100%;
 }
 
 .ss-hero-collage::-webkit-scrollbar {

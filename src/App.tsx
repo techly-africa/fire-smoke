@@ -336,7 +336,7 @@ export function App() {
               </div>
             </div>
 
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', maxWidth: '100%', overflow: 'hidden' }}>
               <div id="hero-slider" className="ss-hero-collage">
                 {[
                   { src: '/photos/p13-peace.jpeg',       cap: 'VOL.01 ✌' },
