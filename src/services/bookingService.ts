@@ -18,6 +18,11 @@ export interface Booking {
   used_at: string | null;
 }
 
+export interface CmsSection {
+  section_key: string;
+  content: any;
+}
+
 export const bookingService = {
   async validateTicket(ticketNumber: string) {
     // 1. Find the booking
@@ -133,5 +138,18 @@ export const bookingService = {
       .single();
     if (error) throw error;
     return data;
+  },
+
+  async getAllCms(): Promise<Record<string, any>> {
+    const { data, error } = await supabase.from('cms').select('section_key, content');
+    if (error) throw error;
+    return (data as CmsSection[]).reduce((acc, curr) => ({ ...acc, [curr.section_key]: curr.content }), {});
+  },
+
+  async updateCms(key: string, content: any) {
+    const { error } = await supabase
+      .from('cms')
+      .upsert({ section_key: key, content, updated_at: new Date().toISOString() }, { onConflict: 'section_key' });
+    if (error) throw error;
   }
 };

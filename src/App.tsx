@@ -1,8 +1,5 @@
-import { useState, useEffect } from 'react';
-import {
-  EVENT, TIERS, WHATS_NEW, GAMES, PRIZES, PRIZE_REWARDS,
-  SCHEDULE, GALLERY, TESTIMONIALS, FAQ, HOSTS, SPONSORS, QUIZ,
-} from './data';
+import { useState, useEffect, useMemo } from 'react';
+import * as staticData from './data';
 import { TornDivider } from './components/TornDivider';
 import { SectionHeader } from './components/SectionHeader';
 import { Checkout } from './components/Checkout';
@@ -10,6 +7,34 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { AdminLogin } from './components/AdminLogin';
 import { bookingService } from './services/bookingService';
 import { C, F } from './tokens';
+
+const CookieConsent = ({ onAccept }: { onAccept: () => void }) => (
+  <div style={{ 
+    position: 'fixed', bottom: 20, left: 20, right: 20, zIndex: 10000, 
+    background: '#111', border: `2px solid ${C.yellow}`, padding: '20px 32px',
+    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    boxShadow: '0 10px 40px rgba(0,0,0,0.8)', flexWrap: 'wrap', gap: 20
+  }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div style={{ fontSize: 24 }}>🍪</div>
+      <div>
+        <div style={{ fontFamily: F.display, fontSize: 14, color: C.yellow, marginBottom: 4 }}>COOKIE_CONSENT_REQUIRED</div>
+        <div style={{ fontSize: 11, color: C.dim, maxWidth: 600 }}>
+          We use cookies to enhance your experience, manage your bookings, and ensure the performance of the Fire & Smoke platform. 
+          By clicking accept, you agree to our local storage usage.
+        </div>
+      </div>
+    </div>
+    <div style={{ display: 'flex', gap: 12 }}>
+      <button 
+        onClick={onAccept}
+        style={{ background: C.yellow, color: C.bg, border: 'none', padding: '10px 24px', fontFamily: F.heavy, fontSize: 12, cursor: 'pointer' }}
+      >
+        ACCEPT_ALL
+      </button>
+    </div>
+  </div>
+);
 
 const HEAT_LABELS  = ['MILD', 'WARM', 'SPICY', 'HEAT', 'INFERNO'] as const;
 const HEAT_COLORS  = ['#fde047', '#fb923c', '#f43f5e', '#dc2626', '#fbbf24'] as const;
@@ -28,7 +53,12 @@ const Logo = () => (
 
 export function App() {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('fs_admin_auth') === 'true';
+  });
+  const [showCookieConsent, setShowCookieConsent] = useState(() => {
+    return localStorage.getItem('fs_cookie_accepted') !== 'true';
+  });
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -36,6 +66,16 @@ export function App() {
       setIsAdmin(true);
     }
   }, []);
+
+  const handleAdminLogin = () => {
+    setIsAuthenticated(true);
+    localStorage.setItem('fs_admin_auth', 'true');
+  };
+
+  const handleAcceptCookies = () => {
+    setShowCookieConsent(false);
+    localStorage.setItem('fs_cookie_accepted', 'true');
+  };
 
 
   const [selectedTierId, setSelectedTierId] = useState('early');
@@ -49,55 +89,108 @@ export function App() {
   const [quizScore, setQuizScore] = useState(0);
   const [quizDone, setQuizDone] = useState(false);
 
-  // Capacity states
-  const [capacity, setCapacity] = useState({ sold: 0, max: 200 });
-  const [isSoldOut, setIsSoldOut] = useState(false);
-  const [dynamicTiers, setDynamicTiers] = useState(TIERS);
+  // Dynamic Content State (CMS)
+  const [cms, setCms] = useState<any>(() => {
+    const cached = localStorage.getItem('fs_cms_cache');
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch (e) {
+        console.error('Failed to parse CMS cache');
+      }
+    }
+    return {
+      EVENT: staticData.EVENT,
+      TIERS: staticData.TIERS,
+      WHATS_NEW: staticData.WHATS_NEW,
+      GAMES: staticData.GAMES,
+      PRIZES: staticData.PRIZES,
+      PRIZE_REWARDS: staticData.PRIZE_REWARDS,
+      SCHEDULE: staticData.SCHEDULE,
+      GALLERY: staticData.GALLERY,
+      TESTIMONIALS: staticData.TESTIMONIALS,
+      FAQ: staticData.FAQ,
+      HOSTS: staticData.HOSTS,
+      SPONSORS: staticData.SPONSORS,
+      QUIZ: staticData.QUIZ,
+    };
+  });
 
   useEffect(() => {
-    async function checkCapacity() {
+    async function init() {
       try {
-        const [bookings, settings] = await Promise.all([
+        const data = await bookingService.getAllCms();
+        if (Object.keys(data).length > 0) {
+          const merged = { ...cms, ...data };
+          setCms(merged);
+          localStorage.setItem('fs_cms_cache', JSON.stringify(merged));
+        }
+      } catch (err) {
+        console.error('CMS Fetch failed, using cached/static fallback');
+      }
+    }
+    init();
+  }, []);
+
+  // Map CMS values to local constants for easier usage
+  const { 
+    EVENT, TIERS, WHATS_NEW, GAMES, PRIZES, PRIZE_REWARDS, 
+    SCHEDULE, GALLERY, TESTIMONIALS, FAQ, HOSTS, SPONSORS, QUIZ 
+  } = cms;
+
+  // Capacity & Settings state
+  const [capacity, setCapacity] = useState({ sold: 0, max: 200 });
+  const [isSoldOut, setIsSoldOut] = useState(false);
+  const [settings, setSettings] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [bookings, s] = await Promise.all([
           bookingService.fetchBookings(),
           bookingService.getSettings()
         ]);
         const confirmed = bookings.filter(b => b.payment_status === 'CONFIRMED').reduce((acc, b) => acc + b.quantity, 0);
-        const max = settings.find(s => s.key === 'max_capacity');
+        const max = s.find(item => item.key === 'max_capacity');
         const maxVal = max ? Number(max.value) : 200;
         
+        setSettings(s);
         setCapacity({ sold: confirmed, max: maxVal });
         if (confirmed >= maxVal) setIsSoldOut(true);
-
-        // Update Tiers
-        const ebActive = settings.find(s => s.key === 'early_bird_active')?.value === 'true';
-        const ebPrice = Number(settings.find(s => s.key === 'early_bird_price')?.value || 15000);
-        const ebDeadline = settings.find(s => s.key === 'early_bird_deadline')?.value || 'May 22';
-
-        let newTiers = TIERS.map(t => {
-          if (t.id === 'early') {
-            return { ...t, price: ebPrice, sub: `Pay before ${ebDeadline}` };
-          }
-          return t;
-        });
-
-        if (!ebActive) {
-          newTiers = newTiers.filter(t => t.id !== 'early');
-          // If selected tier was early and it's gone, switch to regular
-          if (selectedTierId === 'early') setSelectedTierId('regular');
-        }
-
-        setDynamicTiers(newTiers);
-
       } catch (err) {
-        console.error('Capacity check failed');
+        console.error('Capacity/Settings load failed');
       }
     }
-    checkCapacity();
-  }, [selectedTierId]);
+    loadData();
+  }, []);
+
+  const dynamicTiers = useMemo(() => {
+    const ebActive = settings.find(s => s.key === 'early_bird_active')?.value === 'true';
+    const ebPrice = Number(settings.find(s => s.key === 'early_bird_price')?.value || 15000);
+    const ebDeadline = settings.find(s => s.key === 'early_bird_deadline')?.value || 'May 22';
+
+    let list = TIERS.map((t: any) => {
+      if (t.id === 'early') {
+        return { ...t, price: ebPrice, sub: `Pay before ${ebDeadline}` };
+      }
+      return t;
+    });
+
+    if (!ebActive) {
+      list = list.filter((t: any) => t.id !== 'early');
+    }
+    return list;
+  }, [TIERS, settings]);
+
+  useEffect(() => {
+    if (!dynamicTiers.find(t => t.id === selectedTierId)) {
+      if (dynamicTiers.length > 0) setSelectedTierId(dynamicTiers[0].id);
+    }
+  }, [dynamicTiers, selectedTierId]);
 
   if (isAdmin) {
     if (!isAuthenticated) {
-      return <AdminLogin onLogin={() => setIsAuthenticated(true)} />;
+      return <AdminLogin onLogin={handleAdminLogin} />;
     }
     return <AdminDashboard />;
   }
@@ -805,6 +898,8 @@ export function App() {
       {checkoutOpen && (
         <Checkout tier={tier} qty={qty} total={total} onClose={() => setCheckoutOpen(false)} />
       )}
+
+      {showCookieConsent && <CookieConsent onAccept={handleAcceptCookies} />}
     </div>
   );
 }
