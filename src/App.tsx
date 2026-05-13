@@ -365,12 +365,15 @@ export function App() {
                   { src: '/photos/p18-night.jpeg',        cap: 'NIGHTCAP' },
                 ].map(({ src, cap }) => (
                   <div key={src} className="ss-hero-polaroid" style={{ 
-                    width: 'clamp(260px, 35vw, 380px)'
+                    width: 'clamp(280px, 35vw, 400px)'
                   }}>
-                    <img src={src} alt={cap} style={{ width: '100%', height: 'clamp(280px, 40vw, 400px)', objectFit: 'cover', display: 'block' }} />
+                    <img src={src} alt={cap} style={{ width: '100%', height: 'clamp(300px, 40vw, 420px)', objectFit: 'cover', display: 'block' }} />
                     <div style={{ marginTop: 12, textAlign: 'center', fontFamily: F.mono, fontSize: 11, fontWeight: 700, color: C.bg, letterSpacing: 1 }}>{cap}</div>
                   </div>
                 ))}
+                {/* Spacer to prevent cutting off the last item */}
+                <div style={{ flex: '0 0 100px', width: 100 }} />
+              </div>
               </div>
               
               {/* Desktop Slider Nav */}
