@@ -183,7 +183,7 @@ export function App() {
   }, [TIERS, settings]);
 
   useEffect(() => {
-    if (!dynamicTiers.find(t => t.id === selectedTierId)) {
+    if (!dynamicTiers.find((t: any) => t.id === selectedTierId)) {
       if (dynamicTiers.length > 0) setSelectedTierId(dynamicTiers[0].id);
     }
   }, [dynamicTiers, selectedTierId]);
@@ -195,7 +195,7 @@ export function App() {
     return <AdminDashboard />;
   }
 
-  const tier = dynamicTiers.find(t => t.id === selectedTierId) || dynamicTiers[0];
+  const tier = dynamicTiers.find((t: any) => t.id === selectedTierId) || dynamicTiers[0];
   const total = tier.id === 'duo' ? tier.price : tier.price * qty;
   const heatLabel = HEAT_LABELS[heat - 1];
   const heatColor = HEAT_COLORS[heat - 1];
@@ -365,7 +365,7 @@ export function App() {
         <div className="section-responsive app-container">
           <SectionHeader title="NEW THIS EDITION" sub="// switch_it_up.sh" color={C.bg} />
           <div className="responsive-grid-2-4">
-            {WHATS_NEW.map((w, i) => (
+            {WHATS_NEW.map((w: any, i: number) => (
               <div key={i} style={{ background: C.bg, color: C.text, padding: 24, border: `2px solid ${C.bg}`, position: 'relative', boxShadow: '10px 10px 0 rgba(0,0,0,0.2)' }}>
                 {i % 2 === 0 && <div className="ss-tape" style={{ top: -10, right: 20, width: 80, height: 25, opacity: 0.4 }} />}
                 <div style={{ fontFamily: F.mono, fontSize: 9, letterSpacing: 2, color: C.yellow, fontWeight: 700 }}>NEW/{String(i + 1).padStart(2, '0')}</div>
@@ -384,7 +384,7 @@ export function App() {
         <div className="section-responsive app-container" style={{ color: C.text }}>
           <SectionHeader title="RUN OF SHOW" sub="// what_happens_when()" />
           <div style={{ paddingLeft: 12, maxWidth: 800 }}>
-            {SCHEDULE.map((row, i) => (
+            {SCHEDULE.map((row: any, i: number) => (
               <div key={i} style={{ display: 'grid', gridTemplateColumns: '80px 20px 1fr', gap: 16, padding: '16px 0', borderBottom: `1px dashed ${C.dashed}`, alignItems: 'baseline' }}>
                 <div style={{ fontFamily: F.display, fontSize: 24, color: C.yellow, letterSpacing: -1 }}>{row.t}</div>
                 <div style={{ width: 12, height: 12, borderRadius: '50%', background: C.pink, marginTop: 8, alignSelf: 'start' }} />
@@ -403,7 +403,7 @@ export function App() {
         <div className="section-responsive app-container" style={{ position: 'relative', zIndex: 5 }}>
           <SectionHeader title="GAMES ON SITE" sub="// pick_your_poison()" color={C.bg} />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', border: `1px solid ${C.bg}`, background: C.bg }}>
-            {GAMES.map((g) => (
+            {GAMES.map((g: any) => (
               <div key={g.name} style={{ padding: '16px', border: `1px solid rgba(255,255,255,0.1)`, textAlign: 'center' }}>
                 <div style={{ fontFamily: F.mono, fontSize: 9, color: C.yellow, opacity: 0.8 }}>{g.tag.toUpperCase()}</div>
                 <div style={{ fontFamily: F.heavy, fontSize: 15, color: C.text, marginTop: 4 }}>{g.name}</div>
