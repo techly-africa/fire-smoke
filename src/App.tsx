@@ -117,6 +117,21 @@ export function App() {
   });
 
   useEffect(() => {
+    const timer = setInterval(() => {
+      const el = document.getElementById('hero-slider');
+      if (el) {
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        if (el.scrollLeft >= maxScroll - 1) {
+          el.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          el.scrollBy({ left: 350, behavior: 'smooth' });
+        }
+      }
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
     async function init() {
       try {
         const data = await bookingService.getAllCms();
@@ -345,6 +360,9 @@ export function App() {
                   { src: '/photos/image.png',             cap: 'THE GRILL' },
                   { src: '/photos/p14-cheers.jpeg',       cap: 'CHEERS' },
                   { src: '/photos/p15-vibes.jpeg',        cap: 'SUNDAY SERVICE' },
+                  { src: '/photos/p16-crowd.jpeg',        cap: 'THE FAM' },
+                  { src: '/photos/p17-fire.jpeg',         cap: 'OPEN FLAME' },
+                  { src: '/photos/p18-night.jpeg',        cap: 'NIGHTCAP' },
                 ].map(({ src, cap }) => (
                   <div key={src} className="ss-hero-polaroid" style={{ 
                     width: 'clamp(260px, 35vw, 380px)'

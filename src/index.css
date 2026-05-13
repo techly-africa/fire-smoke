@@ -312,20 +312,21 @@ input[type="range"]::-moz-range-thumb {
   background: #fff;
   padding: 8px 8px 32px 8px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
-  transform: rotate(var(--rot, 2deg));
-  min-width: 240px;
+  min-width: 280px;
+  transform: rotate(var(--rot)) translateY(var(--ty));
 }
 
-.ss-hero-polaroid:nth-child(odd) {
-  --rot: -3deg;
-  margin-top: 20px;
-}
+.ss-hero-polaroid:nth-child(5n+1) { --rot: -6deg; --ty: 20px; }
+.ss-hero-polaroid:nth-child(5n+2) { --rot: 4deg;  --ty: -30px; }
+.ss-hero-polaroid:nth-child(5n+3) { --rot: -3deg; --ty: 40px; }
+.ss-hero-polaroid:nth-child(5n+4) { --rot: 7deg;  --ty: -10px; }
+.ss-hero-polaroid:nth-child(5n+5) { --rot: -2deg; --ty: 10px; }
 
-.ss-hero-polaroid:nth-child(even) {
-  --rot: 3deg;
-  margin-top: -10px;
+.ss-hero-polaroid:hover {
+  transform: scale(1.1) rotate(0deg) translateY(-20px) !important;
+  z-index: 100 !important;
 }
 
 
