@@ -288,50 +288,42 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .ss-hero-collage {
-  position: relative;
-  height: clamp(400px, 60vh, 600px);
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 20px;
+  padding: 40px 20px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  cursor: grab;
+}
+
+.ss-hero-collage::-webkit-scrollbar {
+  display: none;
 }
 
 .ss-hero-polaroid {
+  flex-shrink: 0;
+  scroll-snap-align: center;
   background: #fff;
   padding: 8px 8px 32px 8px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.8);
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  transform: rotate(var(--rot, 2deg));
 }
 
-.ss-hero-polaroid:hover {
-  transform: scale(1.05) rotate(0deg) translateY(-10px) !important;
-  z-index: 100 !important;
+.ss-hero-polaroid:nth-child(odd) {
+  --rot: -3deg;
+  margin-top: 20px;
 }
 
-@media (max-width: 768px) {
-  .ss-hero-collage {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    gap: 32px;
-    height: auto;
-    padding: 20px 40px 60px;
-    margin: 40px -20px 0; /* Bleed out slightly */
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .ss-hero-collage::-webkit-scrollbar {
-    display: none;
-  }
-  .ss-hero-polaroid {
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    transform: rotate(var(--mobile-rot, 2deg)) !important;
-    flex-shrink: 0;
-    scroll-snap-align: center;
-    width: 240px !important;
-  }
-  .ss-hero-polaroid:nth-child(even) {
-    --mobile-rot: -2deg;
-  }
+.ss-hero-polaroid:nth-child(even) {
+  --rot: 3deg;
+  margin-top: -10px;
 }
+
+
 
 .ss-chalkboard {
   background: #111;

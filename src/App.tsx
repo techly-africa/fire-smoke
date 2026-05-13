@@ -338,18 +338,16 @@ export function App() {
 
             <div className="ss-hero-collage">
               {[
-                { src: '/photos/p13-peace.jpeg',       cap: 'VOL.01 ✌',      rot: -8,   t: 0,   l: 0,   z: 1 },
-                { src: '/photos/p11-chef-bandana.jpeg', cap: 'THE PITMASTER', rot: 12,   t: 60,  l: 120, z: 3 },
-                { src: '/photos/p12-kamado.jpeg',       cap: 'KAMADO HOT',    rot: -4,   t: 180, l: 30,  z: 2 },
-              ].map(({ src, cap, rot, t, l, z }) => (
+                { src: '/photos/p13-peace.jpeg',       cap: 'VOL.01 ✌' },
+                { src: '/photos/p11-chef-bandana.jpeg', cap: 'THE PITMASTER' },
+                { src: '/photos/p12-kamado.jpeg',       cap: 'KAMADO HOT' },
+                { src: '/photos/image.png',             cap: 'THE GRILL' },
+                { src: '/photos/p14-cheers.jpeg',       cap: 'CHEERS' },
+              ].map(({ src, cap }) => (
                 <div key={src} className="ss-hero-polaroid" style={{ 
-                  position: 'absolute', 
-                  top: t, left: l, 
-                  transform: `rotate(${rot}deg)`, 
-                  zIndex: z,
-                  width: 'clamp(160px, 20vw, 220px)'
+                  width: 'clamp(200px, 25vw, 280px)'
                 }}>
-                  <img src={src} alt={cap} style={{ width: '100%', height: 'clamp(180px, 25vw, 240px)', objectFit: 'cover', display: 'block' }} />
+                  <img src={src} alt={cap} style={{ width: '100%', height: 'clamp(220px, 30vw, 300px)', objectFit: 'cover', display: 'block' }} />
                   <div style={{ marginTop: 12, textAlign: 'center', fontFamily: F.mono, fontSize: 11, fontWeight: 700, color: C.bg, letterSpacing: 1 }}>{cap}</div>
                 </div>
               ))}
