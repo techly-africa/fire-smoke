@@ -129,8 +129,8 @@ html, body {
 @media (min-width: 1025px) {
   .hero-grid {
     display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 48px;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
     align-items: center;
     max-width: 100%;
     overflow: hidden;
@@ -468,7 +468,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .ss-title-fire {
-  font-size: clamp(80px, 18vw, 200px);
+  font-size: clamp(60px, 14vw, 180px);
   color: #fff;
   margin-left: -0.05em;
 }
@@ -488,6 +488,6 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .ss-title-smoke {
-  font-size: clamp(80px, 18vw, 200px);
+  font-size: clamp(60px, 14vw, 180px);
   color: #fff;
 }
