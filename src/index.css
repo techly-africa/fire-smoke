@@ -130,7 +130,7 @@ html, body {
 @media (min-width: 1025px) {
   .hero-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 0.8fr 1.2fr;
     gap: 32px;
     align-items: center;
     max-width: 100%;
@@ -294,8 +294,8 @@ input[type="range"]::-moz-range-thumb {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
-  gap: 24px;
-  padding: 40px 20px;
+  gap: 0px;
+  padding: 40px 60px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   cursor: grab;
@@ -310,12 +310,21 @@ input[type="range"]::-moz-range-thumb {
   flex: 0 0 auto;
   scroll-snap-align: center;
   background: #fff;
-  padding: 8px 8px 32px 8px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  padding: 10px 10px 36px 10px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 5px 15px rgba(0,0,0,0.2);
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
-  min-width: 280px;
+  min-width: 150px;
+  width: 190px;
+  margin-right: -50px; /* Overlap */
   transform: rotate(var(--rot)) translateY(var(--ty));
+  user-select: none;
+}
+
+.ss-hero-polaroid:hover {
+  transform: rotate(0deg) translateY(-20px) scale(1.05);
+  z-index: 50;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.9);
 }
 
 .ss-hero-polaroid:nth-child(5n+1) { --rot: -6deg; --ty: 20px; }

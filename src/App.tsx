@@ -88,6 +88,7 @@ export function App() {
   const [quizChoice, setQuizChoice] = useState<number | null>(null);
   const [quizScore, setQuizScore] = useState(0);
   const [quizDone, setQuizDone] = useState(false);
+  const [isHoveringHero, setIsHoveringHero] = useState(false);
 
   // Dynamic Content State (CMS)
   const [cms, setCms] = useState<any>(() => {
@@ -118,18 +119,19 @@ export function App() {
 
   useEffect(() => {
     const timer = setInterval(() => {
+      if (isHoveringHero) return;
       const el = document.getElementById('hero-slider');
       if (el) {
         const maxScroll = el.scrollWidth - el.clientWidth;
-        if (el.scrollLeft >= maxScroll - 1) {
+        if (el.scrollLeft >= maxScroll - 10) {
           el.scrollTo({ left: 0, behavior: 'smooth' });
         } else {
-          el.scrollBy({ left: 350, behavior: 'smooth' });
+          el.scrollBy({ left: 140, behavior: 'smooth' });
         }
       }
-    }, 4000);
+    }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [isHoveringHero]);
 
   useEffect(() => {
     async function init() {
@@ -351,45 +353,70 @@ export function App() {
               </div>
             </div>
 
-            <div style={{ position: 'relative', maxWidth: '100%', overflow: 'hidden' }}>
-              <div id="hero-slider" className="ss-hero-collage">
+            <div style={{ position: 'relative', maxWidth: '100%' }}>
+              <div 
+                id="hero-slider" 
+                className="ss-hero-collage"
+                onMouseEnter={() => setIsHoveringHero(true)}
+                onMouseLeave={() => setIsHoveringHero(false)}
+              >
                 {[
                   { src: '/photos/p13-peace.jpeg', cap: 'VOL.01 ✌' },
                   { src: '/photos/p11-chef-bandana.jpeg', cap: 'THE PITMASTER' },
                   { src: '/photos/p12-kamado.jpeg', cap: 'KAMADO HOT' },
+                  { src: '/photos/p03-grill-smile.jpeg', cap: 'SMILE & GRILL' },
                   { src: '/photos/image.png', cap: 'THE GRILL' },
-                  { src: '/photos/p14-cheers.jpeg', cap: 'CHEERS' },
-                  { src: '/photos/p15-vibes.jpeg', cap: 'SUNDAY SERVICE' },
-                  { src: '/photos/p16-crowd.jpeg', cap: 'THE FAM' },
-                  { src: '/photos/p17-fire.jpeg', cap: 'OPEN FLAME' },
-                  { src: '/photos/p18-night.jpeg', cap: 'NIGHTCAP' },
+                  { src: '/photos/p14-sitting.jpeg', cap: 'RELAX' },
+                  { src: '/photos/p04-three-friends.jpeg', cap: 'THE FAM' },
+                  { src: '/photos/p08-rainy-group.jpeg', cap: 'RAINTY VIBES' },
+                  { src: '/photos/p01-grill-portrait.jpeg', cap: 'OPEN FLAME' },
+                  { src: '/photos/p07-crowd.jpeg', cap: 'THE VIBE' },
+                  { src: '/photos/p09-picnic.jpeg', cap: 'PICNIC SET' },
+                  { src: '/photos/p05-wide-forest.jpeg', cap: 'MT KIGALI' },
                 ].map(({ src, cap }) => (
-                  <div key={src} className="ss-hero-polaroid" style={{
-                    width: 'clamp(280px, 35vw, 400px)'
-                  }}>
-                    <img src={src} alt={cap} style={{ width: '100%', height: 'clamp(300px, 40vw, 420px)', objectFit: 'cover', display: 'block' }} />
-                    <div style={{ marginTop: 12, textAlign: 'center', fontFamily: F.mono, fontSize: 11, fontWeight: 700, color: C.bg, letterSpacing: 1 }}>{cap}</div>
+                  <div key={src} className="ss-hero-polaroid">
+                    <img src={src} alt={cap} style={{ width: '100%', height: 320, objectFit: 'cover', display: 'block' }} />
+                    <div style={{ marginTop: 12, textAlign: 'center', fontFamily: F.mono, fontSize: 11, fontWeight: 700, color: '#000', letterSpacing: 1 }}>{cap}</div>
                   </div>
                 ))}
                 {/* Spacer to prevent cutting off the last item */}
-                <div style={{ flex: '0 0 100px', width: 100 }} />
+                <div style={{ flex: '0 0 400px', width: 400 }} />
               </div>
-            </div>
 
-            {/* Desktop Slider Nav */}
-            <div className="desktop-only" style={{ position: 'absolute', bottom: -20, right: 100, display: 'flex', gap: 12, zIndex: 10 }}>
-              <button
-                onClick={() => document.getElementById('hero-slider')?.scrollBy({ left: -300, behavior: 'smooth' })}
-                style={{ background: C.bg, color: C.yellow, border: `2px solid ${C.yellow}`, padding: '12px 20px', fontFamily: F.heavy, cursor: 'pointer' }}
-              >
-                ←
-              </button>
-              <button
-                onClick={() => document.getElementById('hero-slider')?.scrollBy({ left: 300, behavior: 'smooth' })}
-                style={{ background: C.bg, color: C.yellow, border: `2px solid ${C.yellow}`, padding: '12px 20px', fontFamily: F.heavy, cursor: 'pointer' }}
-              >
-                →
-              </button>
+              {/* Slider Nav Controls - Floating Style */}
+              <div className="desktop-only" style={{
+                position: 'absolute',
+                bottom: 40,
+                right: 40,
+                display: 'flex',
+                gap: 12,
+                zIndex: 10
+              }}>
+                <button
+                  onClick={() => document.getElementById('hero-slider')?.scrollBy({ left: -250, behavior: 'smooth' })}
+                  style={{
+                    width: 50, height: 50, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.3)',
+                    background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)',
+                    color: '#fff', fontSize: 20, cursor: 'pointer', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s'
+                  }}
+                  className="ss-hover-lift"
+                >
+                  ←
+                </button>
+                <button
+                  onClick={() => document.getElementById('hero-slider')?.scrollBy({ left: 250, behavior: 'smooth' })}
+                  style={{
+                    width: 50, height: 50, borderRadius: '50%', border: 'none',
+                    background: C.yellow, color: C.bg, fontSize: 20, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.3s', boxShadow: '0 8px 20px rgba(0,0,0,0.4)'
+                  }}
+                  className="ss-hover-lift"
+                >
+                  →
+                </button>
+              </div>
             </div>
           </div>
         </div>
