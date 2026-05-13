@@ -247,7 +247,7 @@ export function App() {
         <Logo />
         <button
           style={{ background: C.pink, color: C.bg, border: 'none', padding: '6px 12px', fontFamily: F.heavy, fontSize: 10, letterSpacing: 1 }}
-          onClick={() => setCheckoutOpen(true)}
+          onClick={() => document.getElementById('tickets')?.scrollIntoView({ behavior: 'smooth' })}
         >
           RSVP
         </button>
@@ -273,7 +273,7 @@ export function App() {
           </ul>
           <button
             style={{ background: C.pink, color: C.bg, border: `2px solid ${C.bg}`, padding: '8px 16px', fontFamily: F.heavy, fontSize: 12, letterSpacing: 1 }}
-            onClick={() => setCheckoutOpen(true)}
+            onClick={() => document.getElementById('tickets')?.scrollIntoView({ behavior: 'smooth' })}
           >
             RSVP NOW
           </button>
