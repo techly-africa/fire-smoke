@@ -440,7 +440,7 @@ export function App() {
         <div className="section-responsive app-container" style={{ color: C.text }}>
           <SectionHeader title="WHAT YOU CAN WIN" sub="// reward.json" />
           <div className="responsive-grid-2-4">
-            {PRIZES.map((p, i) => (
+            {PRIZES.map((p: any, i: number) => (
               <div key={i} style={{ padding: 24, background: C.panel, border: `2px solid ${C.border}`, borderTop: `6px solid ${i % 2 === 0 ? C.pink : C.yellow}`, position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: -10, right: -10, fontSize: 80, color: C.bg, opacity: 0.1, fontFamily: F.display, pointerEvents: 'none' }}>0{i + 1}</div>
                 <div style={{ fontFamily: F.display, fontSize: 48, color: i % 2 === 0 ? C.pink : C.yellow, lineHeight: 1, letterSpacing: -2 }}>0{i + 1}</div>
@@ -452,7 +452,7 @@ export function App() {
           <div style={{ marginTop: 24, padding: 24, background: C.bg, border: `2px solid ${C.yellow}`, color: C.yellow }}>
             <div style={{ fontFamily: F.heavy, fontSize: 18, letterSpacing: 2, marginBottom: 16 }}>★ PRIZES INCLUDE:</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 20 }}>
-              {PRIZE_REWARDS.map((r, i) => (
+              {PRIZE_REWARDS.map((r: any, i: number) => (
                 <div key={i} style={{ textAlign: 'center', border: `1px dashed ${C.yellow}`, padding: 12 }}>
                   <div style={{ fontSize: 24, marginBottom: 8 }}>{r.icon === 'cup' ? '🥤' : r.icon === 'ticket' ? '🎫' : '📢'}</div>
                   <div style={{ fontFamily: F.mono, fontSize: 10, fontWeight: 700, letterSpacing: 1 }}>{r.name.toUpperCase()}</div>
@@ -541,7 +541,7 @@ export function App() {
                 onClick={() => setCarouselIdx((carouselIdx + 1) % GALLERY.length)}>NEXT →</button>
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 16 }}>
-              {GALLERY.map((_, i) => (
+              {GALLERY.map((_: any, i: number) => (
                 <button key={i} onClick={() => setCarouselIdx(i)} style={{ width: 10, height: 10, borderRadius: '50%', border: 'none', cursor: 'pointer', padding: 0, background: i === carouselIdx ? C.yellow : 'rgba(255,255,255,0.2)' }} />
               ))}
             </div>
@@ -554,7 +554,7 @@ export function App() {
         <div className="section-responsive app-container" style={{ color: C.text }}>
           <SectionHeader title="VOICES" sub="// reviews.txt" />
           <div className="responsive-grid-2-2">
-            {TESTIMONIALS.map((t, i) => (
+            {TESTIMONIALS.map((t: any, i: number) => (
               <div key={i} style={{ padding: 24, border: '3px solid #fafafa', transform: `rotate(${i % 2 ? 0.5 : -0.5}deg)`, background: VOICE_COLORS[i % 4], color: C.bg }}>
                 <div style={{ fontFamily: F.heavy, fontSize: 18, lineHeight: 1.4 }}>"{t.quote}"</div>
                 <div style={{ fontFamily: F.mono, fontSize: 13, fontWeight: 700, marginTop: 14, letterSpacing: 1 }}>— {t.name} {t.handle}</div>
@@ -569,10 +569,10 @@ export function App() {
         <div className="section-responsive app-container" style={{ color: C.text }}>
           <SectionHeader title="THE CREW" sub="// hosts.csv" />
           <div className="responsive-grid-2-4">
-            {HOSTS.map((h, i) => (
+            {HOSTS.map((h: any, i: number) => (
               <div key={i} style={{ padding: 20, background: C.panel, border: `1px solid ${C.border}`, textAlign: 'center' }}>
                 <div style={{ width: 64, height: 64, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: F.heavy, fontSize: 22, color: C.bg, margin: '0 auto 12px', border: `3px solid ${C.bg}`, background: CREW_COLORS[i % 3] }}>
-                  {h.name.split(' ').map(p => p[0]).join('')}
+                  {h.name.split(' ').map((p: string) => p[0]).join('')}
                 </div>
                 <div style={{ fontFamily: F.heavy, fontSize: 16 }}>{h.name}</div>
                 <div style={{ fontFamily: F.mono, fontSize: 11, color: C.yellow, letterSpacing: 2, fontWeight: 700, marginTop: 6 }}>{h.role}</div>
@@ -589,7 +589,7 @@ export function App() {
           <SectionHeader title="GET YOUR PASS" sub="// reserve.exe" color={C.bg} />
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginTop: 32 }}>
-            {dynamicTiers.map(t => {
+            {dynamicTiers.map((t: any) => {
               const active = selectedTierId === t.id;
               const posterColors = {
                 early: C.yellow,
@@ -722,7 +722,7 @@ export function App() {
           {!quizDone ? (
             <>
               <div style={{ display: 'flex', gap: 6 }}>
-                {QUIZ.map((_, i) => (
+                {QUIZ.map((_: any, i: number) => (
                   <div key={i} style={{ flex: 1, height: 8, background: i < quizIdx ? C.yellow : i === quizIdx ? C.orange : C.dashed }} />
                 ))}
               </div>
@@ -731,7 +731,7 @@ export function App() {
               </div>
               <div style={{ fontFamily: F.heavy, fontSize: 22, color: C.text, marginTop: 12, lineHeight: 1.2 }}>{QUIZ[quizIdx].q}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 20 }}>
-                {QUIZ[quizIdx].options.map((opt, i) => {
+                {QUIZ[quizIdx].options.map((opt: string, i: number) => {
                   const revealed = quizChoice !== null;
                   const isCorrect = QUIZ[quizIdx].answer === i;
                   const isPicked = quizChoice === i;
@@ -786,7 +786,7 @@ export function App() {
         <div className="section-responsive app-container" style={{ color: C.text }}>
           <SectionHeader title="FAQ" sub="// readme.md" />
           <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 900 }}>
-          {FAQ.map((f, i) => (
+          {FAQ.map((f: any, i: number) => (
             <div key={i} style={{ borderBottom: `1px dashed ${C.dashed}` }}>
               <button style={{ display: 'flex', alignItems: 'center', gap: 16, width: '100%', padding: '24px 0', background: 'transparent', border: 'none', textAlign: 'left', cursor: 'pointer', color: C.text }}
                 onClick={() => setOpenFaq(openFaq === i ? -1 : i)}>
@@ -831,7 +831,7 @@ export function App() {
               {[
                 { k: 'LOC',  v: 'Fazenda Zenga · Mt Kigali pines' },
                 { k: 'WHEN', v: 'SAT 30 MAY · 2PM' },
-              ].map(({ k, v }) => (
+              ].map(({ k, v }: { k: string, v: string }) => (
                 <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: `1px dashed ${C.dashed}` }}>
                   <span style={{ fontFamily: F.mono, fontSize: 12, letterSpacing: 2, fontWeight: 700 }}>{k}</span>
                   <span style={{ fontFamily: F.heavy, fontSize: 16, color: C.text }}>{v}</span>
@@ -851,7 +851,7 @@ export function App() {
         <div className="section-responsive app-container" style={{ color: C.text }}>
           <div style={{ fontFamily: F.mono, fontSize: 12, letterSpacing: 2, color: C.dim, fontWeight: 700, marginBottom: 20 }}>// WITH_THANKS_TO</div>
           <div className="responsive-grid-2-4">
-            {SPONSORS.map((s, i) => (
+            {SPONSORS.map((s: any, i: number) => (
               <div key={i} style={{ padding: 16, background: C.panel, border: `1px solid ${C.border}` }}>
                 <div style={{ fontFamily: F.heavy, fontSize: 16, color: C.text }}>{s.name}</div>
                 <div style={{ fontFamily: F.mono, fontSize: 11, color: C.yellow, letterSpacing: 1.5, fontWeight: 700, marginTop: 6 }}>{s.kind}</div>
