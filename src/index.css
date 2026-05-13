@@ -291,8 +291,9 @@ input[type="range"]::-moz-range-thumb {
   display: flex;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  gap: 20px;
-  padding: 40px 20px;
+  scroll-behavior: smooth;
+  gap: 24px;
+  padding: 40px clamp(20px, 10vw, 100px);
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   cursor: grab;

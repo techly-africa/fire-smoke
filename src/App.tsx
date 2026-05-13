@@ -336,21 +336,40 @@ export function App() {
               </div>
             </div>
 
-            <div className="ss-hero-collage">
-              {[
-                { src: '/photos/p13-peace.jpeg',       cap: 'VOL.01 ✌' },
-                { src: '/photos/p11-chef-bandana.jpeg', cap: 'THE PITMASTER' },
-                { src: '/photos/p12-kamado.jpeg',       cap: 'KAMADO HOT' },
-                { src: '/photos/image.png',             cap: 'THE GRILL' },
-                { src: '/photos/p14-cheers.jpeg',       cap: 'CHEERS' },
-              ].map(({ src, cap }) => (
-                <div key={src} className="ss-hero-polaroid" style={{ 
-                  width: 'clamp(200px, 25vw, 280px)'
-                }}>
-                  <img src={src} alt={cap} style={{ width: '100%', height: 'clamp(220px, 30vw, 300px)', objectFit: 'cover', display: 'block' }} />
-                  <div style={{ marginTop: 12, textAlign: 'center', fontFamily: F.mono, fontSize: 11, fontWeight: 700, color: C.bg, letterSpacing: 1 }}>{cap}</div>
-                </div>
-              ))}
+            <div style={{ position: 'relative' }}>
+              <div id="hero-slider" className="ss-hero-collage">
+                {[
+                  { src: '/photos/p13-peace.jpeg',       cap: 'VOL.01 ✌' },
+                  { src: '/photos/p11-chef-bandana.jpeg', cap: 'THE PITMASTER' },
+                  { src: '/photos/p12-kamado.jpeg',       cap: 'KAMADO HOT' },
+                  { src: '/photos/image.png',             cap: 'THE GRILL' },
+                  { src: '/photos/p14-cheers.jpeg',       cap: 'CHEERS' },
+                  { src: '/photos/p15-vibes.jpeg',        cap: 'SUNDAY SERVICE' },
+                ].map(({ src, cap }) => (
+                  <div key={src} className="ss-hero-polaroid" style={{ 
+                    width: 'clamp(220px, 30vw, 320px)'
+                  }}>
+                    <img src={src} alt={cap} style={{ width: '100%', height: 'clamp(240px, 35vw, 340px)', objectFit: 'cover', display: 'block' }} />
+                    <div style={{ marginTop: 12, textAlign: 'center', fontFamily: F.mono, fontSize: 11, fontWeight: 700, color: C.bg, letterSpacing: 1 }}>{cap}</div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Desktop Slider Nav */}
+              <div className="desktop-only" style={{ position: 'absolute', bottom: -20, right: 100, display: 'flex', gap: 12, zIndex: 10 }}>
+                <button 
+                  onClick={() => document.getElementById('hero-slider')?.scrollBy({ left: -300, behavior: 'smooth' })}
+                  style={{ background: C.bg, color: C.yellow, border: `2px solid ${C.yellow}`, padding: '12px 20px', fontFamily: F.heavy, cursor: 'pointer' }}
+                >
+                  ←
+                </button>
+                <button 
+                  onClick={() => document.getElementById('hero-slider')?.scrollBy({ left: 300, behavior: 'smooth' })}
+                  style={{ background: C.bg, color: C.yellow, border: `2px solid ${C.yellow}`, padding: '12px 20px', fontFamily: F.heavy, cursor: 'pointer' }}
+                >
+                  →
+                </button>
+              </div>
             </div>
           </div>
         </div>
