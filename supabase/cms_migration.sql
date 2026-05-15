@@ -14,12 +14,18 @@ DO $$
 BEGIN
     DROP POLICY IF EXISTS "Public read cms" ON cms;
     DROP POLICY IF EXISTS "Admin update cms" ON cms;
+    DROP POLICY IF EXISTS "Admin insert cms" ON cms;
+    DROP POLICY IF EXISTS "Admin delete cms" ON cms;
 EXCEPTION
     WHEN undefined_object THEN NULL;
 END $$;
 
+-- Public read access (storefront)
 CREATE POLICY "Public read cms" ON cms FOR SELECT USING (true);
+-- Admin write access (AdminDashboard CMS tab)
 CREATE POLICY "Admin update cms" ON cms FOR UPDATE USING (true);
+CREATE POLICY "Admin insert cms" ON cms FOR INSERT WITH CHECK (true);
+CREATE POLICY "Admin delete cms" ON cms FOR DELETE USING (true);
 
 -- Seed Initial Data from data.ts
 INSERT INTO cms (section_key, content) VALUES 
@@ -127,3 +133,19 @@ INSERT INTO cms (section_key, content) VALUES
   { "q": "Charcoal or wood for the best smoke flavor?", "options": ["Charcoal only", "Wood only", "Both — wood on top of charcoal", "Neither, gas"], "answer": 2, "fact": "Charcoal for heat stability, wood chunks on top for the smoke perfume." }
 ]')
 ON CONFLICT (section_key) DO UPDATE SET content = EXCLUDED.content;
+
+-- RPC: update_cms_section
+-- Used by AdminDashboard to update CMS via POST (avoids CORS PATCH restriction).
+-- SECURITY DEFINER bypasses RLS for the UPDATE so no INSERT policy is needed.
+CREATE OR REPLACE FUNCTION update_cms_section(p_key TEXT, p_content JSONB)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  UPDATE cms
+  SET content    = p_content,
+      updated_at = NOW()
+  WHERE section_key = p_key;
+END;
+$$;

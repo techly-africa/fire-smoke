@@ -148,9 +148,10 @@ export const bookingService = {
   },
 
   async updateCms(key: string, content: any) {
-    const { error } = await supabase
-      .from('cms')
-      .upsert({ section_key: key, content, updated_at: new Date().toISOString() }, { onConflict: 'section_key' });
+    const { error } = await supabase.rpc('update_cms_section', {
+      p_key: key,
+      p_content: content,
+    });
     if (error) throw error;
   }
 };

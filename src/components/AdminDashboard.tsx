@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 import { bookingService, Booking } from '../services/bookingService';
 import { C, F } from '../tokens';
 import * as staticData from '../data';
+import { ToastContainer, useToast } from './Toast';
 
 export function AdminDashboard() {
+  const { toasts, toast, remove } = useToast();
+
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'ALL' | 'PENDING' | 'CONFIRMED' | 'REJECTED'>('PENDING');
@@ -86,9 +89,9 @@ export function AdminDashboard() {
       setIsSavingCms(true);
       const content = cmsData[selectedCmsKey];
       await bookingService.updateCms(selectedCmsKey, content);
-      alert('CMS content updated successfully!');
+      toast(`${selectedCmsKey} saved successfully.`, 'success');
     } catch (err: any) {
-      alert(`Update failed: ${err.message}`);
+      toast(`Save failed: ${err.message}`, 'error');
     } finally {
       setIsSavingCms(false);
     }
@@ -255,8 +258,9 @@ export function AdminDashboard() {
       if (key === 'early_bird_active') setEbActive(val === 'true');
       if (key === 'early_bird_price') setEbPrice(Number(val));
       if (key === 'early_bird_deadline') setEbDeadline(val);
+      toast(`${key.replace(/_/g, ' ')} updated.`, 'success');
     } catch (err) {
-      alert(`Failed to update ${key}`);
+      toast(`Failed to update ${key}.`, 'error');
     } finally {
       setActionLoading(null);
     }
@@ -267,8 +271,9 @@ export function AdminDashboard() {
     try {
       await bookingService.updateSetting('max_capacity', val.toString());
       setMaxCapacity(val);
+      toast(`Max capacity set to ${val}.`, 'success');
     } catch (err) {
-      alert('Failed to update capacity');
+      toast('Failed to update capacity.', 'error');
     } finally {
       setIsUpdatingCapacity(false);
     }
@@ -292,8 +297,9 @@ export function AdminDashboard() {
     try {
       await bookingService.confirmBooking(id);
       await loadBookings();
+      toast('Booking confirmed. Ticket sent.', 'success');
     } catch (err) {
-      alert('Failed to confirm booking');
+      toast('Failed to confirm booking.', 'error');
     } finally {
       setActionLoading(null);
     }
@@ -305,8 +311,9 @@ export function AdminDashboard() {
     try {
       await bookingService.rejectBooking(id);
       await loadBookings();
+      toast('Booking rejected.', 'info');
     } catch (err) {
-      alert('Failed to reject booking');
+      toast('Failed to reject booking.', 'error');
     } finally {
       setActionLoading(null);
     }
@@ -316,9 +323,9 @@ export function AdminDashboard() {
     setActionLoading(`resend-${booking.id}`);
     try {
       await bookingService.resendTicket(booking);
-      alert('Email resent successfully');
+      toast('Ticket email resent successfully.', 'success');
     } catch (err) {
-      alert('Failed to resend email. Check if the Edge Function is deployed.');
+      toast('Failed to resend email. Is the Edge Function deployed?', 'error');
     } finally {
       setActionLoading(null);
     }
@@ -333,6 +340,8 @@ export function AdminDashboard() {
   });
 
   return (
+    <>
+    <ToastContainer toasts={toasts} remove={remove} />
     <div style={{ background: C.bg, minHeight: '100vh', padding: '40px 20px', color: C.text, fontFamily: F.mono }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40, borderBottom: `2px solid ${C.yellow}`, paddingBottom: 20, flexWrap: 'wrap', gap: 16 }}>
@@ -696,5 +705,6 @@ export function AdminDashboard() {
         )}
       </div>
     </div>
+    </>
   );
 }
