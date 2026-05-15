@@ -23,46 +23,15 @@ export interface CmsSection {
   content: any;
 }
 
+// All write operations use supabase.rpc() (HTTP POST) instead of
+// .update() (HTTP PATCH) to work around the project's CORS restriction
+// that blocks PATCH on the Supabase REST API.
+
 export const bookingService = {
-  async validateTicket(ticketNumber: string) {
-    // 1. Find the booking
-    const { data: booking, error: fetchError } = await supabase
-      .from('bookings')
-      .select('*')
-      .eq('ticket_number', ticketNumber)
-      .eq('payment_status', 'CONFIRMED')
-      .single();
 
-    if (fetchError || !booking) {
-      throw new Error('Ticket not found or not confirmed.');
-    }
-
-    // 2. Check if already used
-    if (booking.used_at) {
-      throw new Error(`Ticket already validated at ${new Date(booking.used_at).toLocaleTimeString()}`);
-    }
-
-    // 3. Mark as used
-    const { data, error: updateError } = await supabase
-      .from('bookings')
-      .update({ used_at: new Date().toISOString() })
-      .eq('id', booking.id)
-      .select()
-      .single();
-
-    if (updateError) throw updateError;
-    return data as Booking;
-  },
-  async submitBooking(data: Omit<Booking, 'id' | 'ticket_number' | 'payment_status' | 'created_at' | 'confirmed_at' | 'ticket_sent' | 'used_at'>) {
-    const { data: booking, error } = await supabase
-      .from('bookings')
-      .insert([data])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return booking;
-  },
+  // ------------------------------------------------------------------
+  // BOOKINGS — reads
+  // ------------------------------------------------------------------
 
   async fetchBookings() {
     const { data, error } = await supabase
@@ -74,49 +43,69 @@ export const bookingService = {
     return data as Booking[];
   },
 
-  async confirmBooking(id: string) {
-    const ticketNumber = `FS-26-${Math.floor(1000 + Math.random() * 9000)}`;
-    const { data, error } = await supabase
+  async submitBooking(data: Omit<Booking, 'id' | 'ticket_number' | 'payment_status' | 'created_at' | 'confirmed_at' | 'ticket_sent' | 'used_at'>) {
+    const { data: booking, error } = await supabase
       .from('bookings')
-      .update({
-        payment_status: 'CONFIRMED',
-        ticket_number: ticketNumber,
-        confirmed_at: new Date().toISOString(),
-        ticket_sent: true
-      })
-      .eq('id', id)
+      .insert([data])
       .select()
       .single();
 
     if (error) throw error;
-    
+    return booking;
+  },
+
+  // ------------------------------------------------------------------
+  // BOOKINGS — writes via RPC (POST, not PATCH)
+  // ------------------------------------------------------------------
+
+  async validateTicket(ticketNumber: string) {
+    const { data, error } = await supabase
+      .rpc('validate_ticket', { p_ticket_number: ticketNumber });
+
+    if (error) throw new Error(error.message);
+    if (!data || data.length === 0) throw new Error('Ticket not found or not confirmed.');
+    return data[0] as Booking;
+  },
+
+  async confirmBooking(id: string) {
+    const ticketNumber = `FS-26-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const { data, error } = await supabase
+      .rpc('confirm_booking', { p_id: id, p_ticket_number: ticketNumber });
+
+    if (error) throw error;
+    if (!data || data.length === 0) throw new Error('Booking not found.');
+
+    const booking = data[0] as Booking;
+
     // Send email via Resend with dynamic CMS data
     try {
       const cms = await this.getAllCms();
-      await mailService.sendTicket(data as Booking, cms.EVENT);
+      await mailService.sendTicket(booking, cms.EVENT);
     } catch (mailErr) {
       console.error('Failed to send ticket email:', mailErr);
-      // We don't throw here to avoid breaking the UI, but we log it
+      // Non-fatal — booking is confirmed; email failure is logged only.
     }
 
-    return data as Booking;
+    return booking;
   },
 
   async rejectBooking(id: string) {
     const { data, error } = await supabase
-      .from('bookings')
-      .update({ payment_status: 'REJECTED' })
-      .eq('id', id)
-      .select()
-      .single();
+      .rpc('reject_booking', { p_id: id });
 
     if (error) throw error;
-    return data as Booking;
+    if (!data || data.length === 0) throw new Error('Booking not found.');
+    return data[0] as Booking;
   },
 
   async resendTicket(booking: Booking) {
     return await mailService.sendTicket(booking);
   },
+
+  // ------------------------------------------------------------------
+  // SETTINGS — reads + writes via RPC
+  // ------------------------------------------------------------------
 
   async getSettings() {
     try {
@@ -131,27 +120,32 @@ export const bookingService = {
   },
 
   async updateSetting(key: string, value: string) {
-    const { data, error } = await supabase
-      .from('settings')
-      .update({ value, updated_at: new Date().toISOString() })
-      .eq('key', key)
-      .select()
-      .single();
+    const { error } = await supabase
+      .rpc('update_setting', { p_key: key, p_value: value });
+
     if (error) throw error;
-    return data;
   },
 
+  // ------------------------------------------------------------------
+  // CMS — reads + writes via RPC
+  // ------------------------------------------------------------------
+
   async getAllCms(): Promise<Record<string, any>> {
-    const { data, error } = await supabase.from('cms').select('section_key, content');
+    const { data, error } = await supabase
+      .from('cms')
+      .select('section_key, content');
+
     if (error) throw error;
-    return (data as CmsSection[]).reduce((acc, curr) => ({ ...acc, [curr.section_key]: curr.content }), {});
+    return (data as CmsSection[]).reduce(
+      (acc, curr) => ({ ...acc, [curr.section_key]: curr.content }),
+      {}
+    );
   },
 
   async updateCms(key: string, content: any) {
-    const { error } = await supabase.rpc('update_cms_section', {
-      p_key: key,
-      p_content: content,
-    });
+    const { error } = await supabase
+      .rpc('update_cms_section', { p_key: key, p_content: content });
+
     if (error) throw error;
-  }
+  },
 };
