@@ -3,6 +3,7 @@ import { bookingService, Booking } from '../services/bookingService';
 import { C, F } from '../tokens';
 import * as staticData from '../data';
 import { ToastContainer, useToast } from './Toast';
+import './AdminDashboard.css';
 
 export function AdminDashboard() {
   const { toasts, toast, remove } = useToast();
@@ -342,9 +343,9 @@ export function AdminDashboard() {
   return (
     <>
     <ToastContainer toasts={toasts} remove={remove} />
-    <div style={{ background: C.bg, minHeight: '100vh', padding: '40px 20px', color: C.text, fontFamily: F.mono }}>
+    <div className="admin-shell" style={{ background: C.bg, minHeight: '100vh', color: C.text, fontFamily: F.mono }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40, borderBottom: `2px solid ${C.yellow}`, paddingBottom: 20, flexWrap: 'wrap', gap: 16 }}>
+        <header className="admin-header" style={{ color: C.text }}>
           <div>
             <h1 style={{ fontFamily: F.display, fontSize: 'clamp(24px, 5vw, 40px)', color: C.yellow, margin: 0 }}>BOOKING_ADMIN</h1>
             <p style={{ color: C.dim, margin: '4px 0 0', fontSize: 14 }}>Manage RSVPs and Confirm Payments</p>
@@ -359,20 +360,17 @@ export function AdminDashboard() {
         </header>
 
         {/* Tab Switcher */}
-        <div style={{ display: 'flex', gap: 10, marginBottom: 32, borderBottom: `1px solid ${C.border}`, paddingBottom: 16 }}>
+        <div className="admin-tabs">
           {(['GUESTS', 'LOGISTICS', 'CMS'] as const).map(t => (
             <button 
               key={t}
+              className="admin-tab"
               onClick={() => setActiveTab(t)}
               style={{ 
-                padding: '12px 24px', 
                 background: activeTab === t ? C.yellow : 'transparent', 
                 color: activeTab === t ? C.bg : C.text,
                 border: activeTab === t ? 'none' : `1px solid ${C.border}`,
                 fontFamily: F.display,
-                fontSize: 14,
-                cursor: 'pointer',
-                letterSpacing: 1
               }}
             >
               {t}
@@ -529,11 +527,19 @@ export function AdminDashboard() {
         )}
 
         {activeTab === 'CMS' && (
-          <div style={{ background: '#111', border: `2px solid ${C.yellow}`, padding: 32 }}>
-            <h2 style={{ fontFamily: F.display, fontSize: 24, margin: '0 0 24px', color: C.yellow }}>CONTENT_MANAGEMENT_SYSTEM</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '250px 1fr', gap: 32 }}>
-              {/* Section List */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ background: '#111', border: `2px solid ${C.yellow}`, padding: 'clamp(16px, 4vw, 32px)' }}>
+            <h2 style={{ fontFamily: F.display, fontSize: 'clamp(16px,5vw,24px)', margin: '0 0 24px', color: C.yellow }}>CONTENT_MANAGEMENT_SYSTEM</h2>
+            {/* Mobile: select picker */}
+            <select
+              className="cms-section-select"
+              value={selectedCmsKey}
+              onChange={e => setSelectedCmsKey(e.target.value)}
+            >
+              {Object.keys(cmsData).sort().map(k => <option key={k} value={k}>{k}</option>)}
+            </select>
+            <div className="cms-grid">
+              {/* Section List — hidden on mobile, replaced by select above */}
+              <div className="cms-section-list">
                 {Object.keys(cmsData).sort().map(key => (
                   <button 
                     key={key}
@@ -579,7 +585,7 @@ export function AdminDashboard() {
         {activeTab === 'GUESTS' && (
           <>
             <div style={{ display: 'flex', gap: 20, marginBottom: 32, flexWrap: 'wrap', alignItems: 'center' }}>
-              <div style={{ flex: 1, minWidth: 300 }}>
+              <div className="admin-search-wrap" style={{ flex: 1 }}>
                 <input 
                   type="text" 
                   placeholder="Search name, email, or reference..." 
@@ -613,7 +619,9 @@ export function AdminDashboard() {
             {loading ? (
               <div style={{ textAlign: 'center', padding: 100, color: C.yellow }}>LOADING_DATA...</div>
             ) : (
-              <div style={{ overflowX: 'auto' }}>
+              <>
+              {/* ── Desktop table ── */}
+              <div className="booking-table-wrap">
                 <table style={{ width: '100%', borderCollapse: 'collapse', background: C.panel, border: `1px solid ${C.border}` }}>
                   <thead>
                     <tr style={{ borderBottom: `2px solid ${C.border}`, textAlign: 'left' }}>
@@ -700,6 +708,41 @@ export function AdminDashboard() {
                   </tbody>
                 </table>
               </div>
+              {/* ── Mobile cards ── */}
+              <div className="booking-cards">
+                {filtered.map(b => {
+                  const statusColor = b.payment_status === 'CONFIRMED' ? '#4ade80' : b.payment_status === 'REJECTED' ? '#f87171' : '#facc15';
+                  const statusBg   = b.payment_status === 'CONFIRMED' ? 'rgba(34,197,94,0.15)' : b.payment_status === 'REJECTED' ? 'rgba(239,68,68,0.15)' : 'rgba(234,179,8,0.15)';
+                  return (
+                    <div key={b.id} style={{ background: C.panel, border: `1px solid ${C.border}`, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: 15 }}>{b.full_name}</div>
+                          <div style={{ fontSize: 11, color: C.dim }}>{b.email}</div>
+                        </div>
+                        <span style={{ padding: '4px 8px', fontSize: 10, fontWeight: 700, background: statusBg, color: statusColor, borderRadius: 4, flexShrink: 0 }}>{b.payment_status}</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: 16, fontSize: 12, color: C.dim, flexWrap: 'wrap' }}>
+                        <span>{b.tier_id.toUpperCase()} ×{b.quantity}</span>
+                        <span style={{ color: C.text, fontWeight: 700 }}>{b.total_price.toLocaleString()} RWF</span>
+                        {b.momo_reference && <span style={{ color: C.yellow }}>Ref: {b.momo_reference}</span>}
+                      </div>
+                      {b.ticket_number && <div style={{ fontSize: 10, color: C.dim }}>TICKET: {b.ticket_number}{b.used_at && <span style={{ color: C.pink, marginLeft: 8, fontWeight: 700 }}>[USED]</span>}</div>}
+                      {b.payment_status === 'PENDING' && (
+                        <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                          <button disabled={!!actionLoading} onClick={() => handleConfirm(b.id)} style={{ flex: 1, background: '#22c55e', color: '#fff', border: 'none', padding: '10px', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>{actionLoading === b.id ? '...' : 'CONFIRM'}</button>
+                          <button disabled={!!actionLoading} onClick={() => handleReject(b.id)}  style={{ flex: 1, background: '#ef4444', color: '#fff', border: 'none', padding: '10px', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}>{actionLoading === b.id ? '...' : 'REJECT'}</button>
+                        </div>
+                      )}
+                      {b.payment_status === 'CONFIRMED' && (
+                        <button disabled={actionLoading === `resend-${b.id}`} onClick={() => handleResend(b)} style={{ background: 'transparent', color: C.yellow, border: `1px solid ${C.yellow}`, padding: '8px', cursor: 'pointer', fontSize: 11, fontFamily: F.mono }}>{actionLoading === `resend-${b.id}` ? '...' : 'RESEND_EMAIL'}</button>
+                      )}
+                    </div>
+                  );
+                })}
+                {filtered.length === 0 && <div style={{ padding: 40, textAlign: 'center', color: C.dim }}>No bookings found.</div>}
+              </div>
+              </>
             )}
           </>
         )}
