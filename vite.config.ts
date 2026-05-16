@@ -36,6 +36,14 @@ export default defineConfig({
       workbox: {
         // Cache the storefront shell and static assets
         globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,svg,woff2}'],
+        // Serve index.html for any navigation the SW handles
+        navigateFallback: '/index.html',
+        // Never intercept Chrome internal pages or extension pages
+        navigateFallbackDenylist: [
+          /^\/api\//,
+          /chrome-extension:\/\//,
+          /^chrome-error:/,
+        ],
         runtimeCaching: [
           {
             // Cache Supabase API reads (storefront CMS, tiers, etc.)
