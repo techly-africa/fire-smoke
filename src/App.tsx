@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import * as staticData from './data';
 import { TornDivider } from './components/TornDivider';
 import { SectionHeader } from './components/SectionHeader';
@@ -164,7 +164,7 @@ export function App() {
   }, []);
 
   // Map CMS values to local constants for easier usage
-  const cmsData = cms;
+
   const {
     EVENT, TIERS, WHATS_NEW, GAMES, PRIZES, PRIZE_REWARDS,
     SCHEDULE, GALLERY, TESTIMONIALS, FAQ, HOSTS, SPONSORS, QUIZ, PREDICT_WIN

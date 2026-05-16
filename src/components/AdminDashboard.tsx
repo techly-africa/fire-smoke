@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { bookingService, Booking } from '../services/bookingService';
-import { C as TokensC, F as TokensF } from '../tokens';
+
 import * as staticData from '../data';
 import { ToastContainer, useToast } from './Toast';
 import { supabase } from '../lib/supabase';
