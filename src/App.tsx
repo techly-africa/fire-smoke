@@ -252,7 +252,14 @@ export function App() {
         <FeatureModal
           item={selectedFeature.item}
           index={selectedFeature.index}
+          total={WHATS_NEW.length}
           onClose={() => setSelectedFeature(null)}
+          onPrev={selectedFeature.index > 0
+            ? () => setSelectedFeature({ item: WHATS_NEW[selectedFeature.index - 1], index: selectedFeature.index - 1 })
+            : undefined}
+          onNext={selectedFeature.index < WHATS_NEW.length - 1
+            ? () => setSelectedFeature({ item: WHATS_NEW[selectedFeature.index + 1], index: selectedFeature.index + 1 })
+            : undefined}
         />
       )}
       <div style={{ background: C.yellow, color: C.bg, padding: 'clamp(6px, 1.5vw, 12px) 0', overflow: 'hidden', borderTop: `3px solid ${C.bg}`, borderBottom: `3px solid ${C.bg}` }}>
