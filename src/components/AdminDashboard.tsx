@@ -3,6 +3,7 @@ import { bookingService, Booking } from '../services/bookingService';
 import { C, F } from '../tokens';
 import * as staticData from '../data';
 import { ToastContainer, useToast } from './Toast';
+import { supabase } from '../lib/supabase';
 import './AdminDashboard.css';
 
 export function AdminDashboard() {
@@ -327,6 +328,21 @@ export function AdminDashboard() {
       toast('Ticket email resent successfully.', 'success');
     } catch (err) {
       toast('Failed to resend email. Is the Edge Function deployed?', 'error');
+    } finally {
+      setActionLoading(null);
+    }
+  }
+
+  async function handleDelete(id: string, name: string) {
+    if (!window.confirm(`DELETE booking for "${name}"? This cannot be undone.`)) return;
+    setActionLoading(`delete-${id}`);
+    try {
+      const { error } = await supabase.rpc('delete_booking', { p_id: id });
+      if (error) throw error;
+      setBookings(prev => prev.filter(b => b.id !== id));
+      toast(`Booking for ${name} deleted.`, 'info');
+    } catch (err: any) {
+      toast(`Delete failed: ${err.message}`, 'error');
     } finally {
       setActionLoading(null);
     }
@@ -698,11 +714,21 @@ export function AdminDashboard() {
                             </div>
                           )}
                         </td>
+                        <td style={{ padding: '16px 8px', textAlign: 'center' }}>
+                          <button
+                            disabled={!!actionLoading}
+                            onClick={() => handleDelete(b.id, b.full_name)}
+                            title="Delete booking"
+                            style={{ background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.3)', width: 28, height: 28, cursor: 'pointer', fontSize: 14, lineHeight: 1, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          >
+                            {actionLoading === `delete-${b.id}` ? '…' : '×'}
+                          </button>
+                        </td>
                       </tr>
                     ))}
                     {filtered.length === 0 && (
                       <tr>
-                        <td colSpan={7} style={{ padding: 40, textAlign: 'center', color: C.dim }}>No bookings found.</td>
+                        <td colSpan={8} style={{ padding: 40, textAlign: 'center', color: C.dim }}>No bookings found.</td>
                       </tr>
                     )}
                   </tbody>
@@ -737,6 +763,13 @@ export function AdminDashboard() {
                       {b.payment_status === 'CONFIRMED' && (
                         <button disabled={actionLoading === `resend-${b.id}`} onClick={() => handleResend(b)} style={{ background: 'transparent', color: C.yellow, border: `1px solid ${C.yellow}`, padding: '8px', cursor: 'pointer', fontSize: 11, fontFamily: F.mono }}>{actionLoading === `resend-${b.id}` ? '...' : 'RESEND_EMAIL'}</button>
                       )}
+                      <button
+                        disabled={!!actionLoading}
+                        onClick={() => handleDelete(b.id, b.full_name)}
+                        style={{ background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.3)', padding: '6px', cursor: 'pointer', fontSize: 11, fontWeight: 700, marginTop: 4 }}
+                      >
+                        {actionLoading === `delete-${b.id}` ? '...' : '× DELETE'}
+                      </button>
                     </div>
                   );
                 })}

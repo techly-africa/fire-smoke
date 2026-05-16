@@ -104,3 +104,15 @@ BEGIN
   RETURNING *;
 END;
 $$;
+
+-- 6. delete_booking
+--    Used by AdminDashboard to remove test/invalid bookings.
+CREATE OR REPLACE FUNCTION delete_booking(p_id UUID)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  DELETE FROM bookings WHERE id = p_id;
+END;
+$$;
