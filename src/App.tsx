@@ -5,6 +5,7 @@ import { SectionHeader } from './components/SectionHeader';
 import { Checkout } from './components/Checkout';
 import { AdminDashboard } from './components/AdminDashboard';
 import { AdminLogin } from './components/AdminLogin';
+import { FeatureModal } from './components/FeatureModal';
 import { bookingService } from './services/bookingService';
 import { C, F } from './tokens';
 
@@ -96,6 +97,7 @@ export function App() {
   const [quizScore, setQuizScore] = useState(0);
   const [quizDone, setQuizDone] = useState(false);
   const [isHoveringHero, setIsHoveringHero] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState<{ item: any; index: number } | null>(null);
 
   // Dynamic Content State (CMS)
   const [cms, setCms] = useState<any>(() => {
@@ -246,6 +248,13 @@ export function App() {
   }
   return (
     <div style={{ background: `radial-gradient(circle at 50% 30%, #1a1a1a 0%, ${C.bg} 70%)`, color: C.text, fontFamily: F.mono, paddingBottom: 'clamp(40px, 10vw, 80px)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {selectedFeature && (
+        <FeatureModal
+          item={selectedFeature.item}
+          index={selectedFeature.index}
+          onClose={() => setSelectedFeature(null)}
+        />
+      )}
       <div style={{ background: C.yellow, color: C.bg, padding: 'clamp(6px, 1.5vw, 12px) 0', overflow: 'hidden', borderTop: `3px solid ${C.bg}`, borderBottom: `3px solid ${C.bg}` }}>
         <div className="ss-marquee-anim" style={{ whiteSpace: 'nowrap', display: 'inline-block' }}>
           {Array.from({ length: 4 }).map((_, k) => (
@@ -425,11 +434,29 @@ export function App() {
           <SectionHeader title="NEW THIS EDITION" sub="// switch_it_up.sh" color={C.bg} />
           <div className="responsive-grid-2-4">
             {WHATS_NEW.map((w: any, i: number) => (
-              <div key={i} style={{ background: C.bg, color: C.text, padding: 24, border: `2px solid ${C.bg}`, position: 'relative', boxShadow: '10px 10px 0 rgba(0,0,0,0.2)' }}>
+              <div
+                key={i}
+                onClick={() => setSelectedFeature({ item: w, index: i })}
+                style={{
+                  background: C.bg, color: C.text, padding: 24,
+                  border: `2px solid ${C.bg}`, position: 'relative',
+                  boxShadow: '10px 10px 0 rgba(0,0,0,0.2)',
+                  cursor: 'pointer', transition: 'transform 0.18s, box-shadow 0.18s',
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)';
+                  (e.currentTarget as HTMLElement).style.boxShadow = `10px 16px 0 rgba(0,0,0,0.25), 0 0 0 2px ${C.yellow}`;
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.transform = '';
+                  (e.currentTarget as HTMLElement).style.boxShadow = '10px 10px 0 rgba(0,0,0,0.2)';
+                }}
+              >
                 {i % 2 === 0 && <div className="ss-tape" style={{ top: -10, right: 20, width: 80, height: 25, opacity: 0.4 }} />}
                 <div style={{ fontFamily: F.mono, fontSize: 9, letterSpacing: 2, color: C.yellow, fontWeight: 700 }}>NEW/{String(i + 1).padStart(2, '0')}</div>
                 <div style={{ fontFamily: F.heavy, fontSize: 18, marginTop: 10, lineHeight: 1.1 }}>{w.title}</div>
                 <div style={{ fontFamily: F.mono, fontSize: 13, color: C.dim, marginTop: 10, lineHeight: 1.4 }}>{w.sub}</div>
+                <div style={{ fontFamily: F.mono, fontSize: 10, color: C.yellow, marginTop: 14, letterSpacing: 1 }}>READ MORE →</div>
               </div>
             ))}
           </div>
