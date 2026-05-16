@@ -5,8 +5,8 @@ interface FeatureItem {
   icon: string;
   title: string;
   sub: string;
-  detail: string;
-  photos: string[];
+  detail?: string;
+  photos?: string[];
 }
 
 interface Props {
@@ -19,6 +19,10 @@ interface Props {
 }
 
 export function FeatureModal({ item, index, total, onClose, onPrev, onNext }: Props) {
+  // Normalise — CMS may not have photos/detail yet
+  const photos = item.photos ?? [];
+  const detail = item.detail ?? '';
+
   const [activePhoto, setActivePhoto] = useState(0);
   const [photoFading, setPhotoFading] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -54,11 +58,11 @@ export function FeatureModal({ item, index, total, onClose, onPrev, onNext }: Pr
       if (e.key === 'Escape') handleClose();
       if (e.key === 'ArrowRight' && onNext) onNext();
       if (e.key === 'ArrowLeft' && onPrev) onPrev();
-      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      if (photos.length > 1 && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
         e.preventDefault();
         const next = e.key === 'ArrowDown'
-          ? (activePhoto + 1) % item.photos.length
-          : (activePhoto - 1 + item.photos.length) % item.photos.length;
+          ? (activePhoto + 1) % photos.length
+          : (activePhoto - 1 + photos.length) % photos.length;
         changePhoto(next);
       }
     }
@@ -68,7 +72,7 @@ export function FeatureModal({ item, index, total, onClose, onPrev, onNext }: Pr
       document.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
     };
-  }, [handleClose, onNext, onPrev, activePhoto, item.photos.length, changePhoto]);
+  }, [handleClose, onNext, onPrev, activePhoto, photos.length, changePhoto]);
 
   const badge = `NEW/${String(index + 1).padStart(2, '0')}`;
 
@@ -135,11 +139,13 @@ export function FeatureModal({ item, index, total, onClose, onPrev, onNext }: Pr
         >
           {/* ── LEFT: Photo stack ── */}
           <div style={{ position: 'relative', background: '#000', display: 'flex', flexDirection: 'column' }}>
-            {/* Main photo */}
-            <div style={{ flex: 1, position: 'relative', overflow: 'hidden', minHeight: 280 }}>
-              <img
-                key={activePhoto}
-                src={item.photos[activePhoto]}
+            {photos.length > 0 ? (
+              <>
+              {/* Main photo */}
+              <div style={{ flex: 1, position: 'relative', overflow: 'hidden', minHeight: 280 }}>
+                <img
+                  key={activePhoto}
+                  src={photos[activePhoto]}
                 alt={`${item.title} photo ${activePhoto + 1}`}
                 style={{
                   width: '100%', height: '100%',
@@ -160,22 +166,22 @@ export function FeatureModal({ item, index, total, onClose, onPrev, onNext }: Pr
                 fontFamily: F.mono, fontSize: 10, color: 'rgba(255,255,255,0.6)',
                 letterSpacing: 2,
               }}>
-                {String(activePhoto + 1).padStart(2, '0')} / {String(item.photos.length).padStart(2, '0')}
+                {String(activePhoto + 1).padStart(2, '0')} / {String(photos.length).padStart(2, '0')}
               </div>
               {/* Photo nav arrows */}
-              {item.photos.length > 1 && (
+              {photos.length > 1 && (
                 <div style={{
                   position: 'absolute', bottom: 8, right: 12,
                   display: 'flex', gap: 6,
                 }}>
                   <button
                     className="fm-nav-btn"
-                    onClick={() => changePhoto((activePhoto - 1 + item.photos.length) % item.photos.length)}
+                    onClick={() => changePhoto((activePhoto - 1 + photos.length) % photos.length)}
                     style={{ width: 32, height: 32, fontSize: 14 }}
                   >←</button>
                   <button
                     className="fm-nav-btn"
-                    onClick={() => changePhoto((activePhoto + 1) % item.photos.length)}
+                    onClick={() => changePhoto((activePhoto + 1) % photos.length)}
                     style={{ width: 32, height: 32, fontSize: 14 }}
                   >→</button>
                 </div>
@@ -183,12 +189,12 @@ export function FeatureModal({ item, index, total, onClose, onPrev, onNext }: Pr
             </div>
 
             {/* Thumbnail strip */}
-            {item.photos.length > 1 && (
+            {photos.length > 1 && (
               <div style={{
                 display: 'flex', gap: 4, padding: '8px',
                 background: '#000', flexWrap: 'wrap',
               }}>
-                {item.photos.map((src, i) => (
+                {photos.map((src, i) => (
                   <div
                     key={i}
                     className={`fm-thumb${i === activePhoto ? ' active' : ''}`}
@@ -205,6 +211,13 @@ export function FeatureModal({ item, index, total, onClose, onPrev, onNext }: Pr
                     />
                   </div>
                 ))}
+              </div>
+            )}
+            </>
+            ) : (
+              /* No photos fallback */
+              <div style={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#111' }}>
+                <span style={{ fontFamily: F.mono, fontSize: 12, color: 'rgba(255,255,255,0.2)', letterSpacing: 2 }}>NO_PHOTOS</span>
               </div>
             )}
           </div>
@@ -279,7 +292,7 @@ export function FeatureModal({ item, index, total, onClose, onPrev, onNext }: Pr
                 color: 'rgba(255,255,255,0.65)',
                 lineHeight: 1.85, margin: 0,
               }}>
-                {item.detail}
+                {detail || item.sub}
               </p>
             </div>
 

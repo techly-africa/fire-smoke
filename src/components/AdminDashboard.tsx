@@ -1,10 +1,88 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { bookingService, Booking } from '../services/bookingService';
-import { C, F } from '../tokens';
+import { C as TokensC, F as TokensF } from '../tokens';
 import * as staticData from '../data';
 import { ToastContainer, useToast } from './Toast';
 import { supabase } from '../lib/supabase';
+import { uploadToCloudinary } from '../lib/cloudinary';
 import './AdminDashboard.css';
+
+const C = {
+  bg: '#0a0a0a',
+  surface: '#141414',
+  border: '#262626',
+  panel: '#111',
+  text: '#ffffff',
+  textMuted: '#a3a3a3',
+  yellow: '#facc15',
+  red: '#ef4444',
+  dim: '#666',
+  pink: '#ec4899'
+};
+
+const F = {
+  heavy: '"Archivo Black", sans-serif',
+  display: '"Archivo Black", sans-serif',
+  mono: '"JetBrains Mono", monospace'
+};
+
+
+function ImageUpload({ value, onUpload }: { value: string, onUpload: (url: string) => void }) {
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = React.useState(false);
+  const { toast } = useToast();
+
+  return (
+    <div style={{ marginBottom: 12 }}>
+      {value && (
+        <img 
+          src={value} 
+          alt="Preview" 
+          style={{ maxWidth: 200, height: 100, objectFit: 'cover', border: `1px solid ${C.border}`, marginBottom: 8, display: 'block' }} 
+        />
+      )}
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            
+            setUploading(true);
+            try {
+              const url = await uploadToCloudinary(file, 'fire-smoke/cms');
+              onUpload(url);
+              toast('Image uploaded successfully.', 'success');
+            } catch (err: any) {
+              toast(`Upload failed: ${err.message}`, 'error');
+            } finally {
+              setUploading(false);
+            }
+          }}
+        />
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading}
+          style={{
+            background: 'rgba(255,255,255,0.1)',
+            color: C.yellow,
+            border: `1px solid ${C.yellow}`,
+            padding: '6px 12px',
+            fontFamily: F.heavy,
+            fontSize: 10,
+            cursor: uploading ? 'not-allowed' : 'pointer'
+          }}
+        >
+          {uploading ? 'UPLOADING...' : 'UPLOAD_TO_CLOUDINARY'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 
 export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
   const { toasts, toast, remove } = useToast();
@@ -23,7 +101,24 @@ export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
   // Validator state
   const [ticketInput, setTicketInput] = useState('');
   const [validationResult, setValidationResult] = useState<{ success: boolean; msg: string } | null>(null);
-  const [activeTab, setActiveTab] = useState<'GUESTS' | 'LOGISTICS' | 'CMS'>('GUESTS');
+  const [activeTab, setActiveTab] = useState<'GUESTS' | 'LOGISTICS' | 'CMS' | 'PREDICTIONS' | 'COUPONS'>('GUESTS');
+  const [predictions, setPredictions] = useState<any[]>([]);
+  const [coupons, setCoupons] = useState<any[]>([]);
+  const [isAnnouncing, setIsAnnouncing] = useState(false);
+  const [confirmModal, setConfirmModal] = useState<{
+    show: boolean;
+    title: string;
+    message: string;
+    confirmText: string;
+    onConfirm: () => void;
+    accentColor?: string;
+  }>({
+    show: false,
+    title: '',
+    message: '',
+    confirmText: 'CONFIRM',
+    onConfirm: () => {}
+  });
 
   // CMS state
   const [cmsData, setCmsData] = useState<Record<string, any>>({
@@ -40,9 +135,14 @@ export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
     HOSTS: staticData.HOSTS,
     SPONSORS: staticData.SPONSORS,
     QUIZ: staticData.QUIZ,
+    PREDICT_WIN: staticData.PREDICT_WIN,
   });
   const [selectedCmsKey, setSelectedCmsKey] = useState<string>('EVENT');
   const [isSavingCms, setIsSavingCms] = useState(false);
+
+  // Coupon Creation State
+  const [showCouponModal, setShowCouponModal] = useState(false);
+  const [newCoupon, setNewCoupon] = useState({ code: '', discount: 10, maxUses: 0 });
 
   async function handleValidate() {
     if (!ticketInput) return;
@@ -58,6 +158,126 @@ export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
     } finally {
       setActionLoading(null);
     }
+  }
+
+  async function loadPredictions() {
+    try {
+      const { data, error } = await supabase
+        .from('predictions')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      setPredictions(data || []);
+    } catch (err: any) {
+      toast(`Failed to load predictions: ${err.message}`, 'error');
+    }
+  }
+
+  async function loadCoupons() {
+    try {
+      const { data, error } = await supabase
+        .from('coupons')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      setCoupons(data || []);
+    } catch (err: any) {
+      toast(`Failed to load coupons: ${err.message}`, 'error');
+    }
+  }
+
+  async function handleCreateCoupon() {
+    if (!newCoupon.code) {
+      toast('Coupon code is required.', 'error');
+      return;
+    }
+    try {
+      const { error } = await supabase.rpc('create_coupon', {
+        p_code: newCoupon.code,
+        p_discount_percent: newCoupon.discount,
+        p_max_uses: newCoupon.maxUses
+      });
+      if (error) throw error;
+      toast('Coupon created successfully.', 'success');
+      setShowCouponModal(false);
+      setNewCoupon({ code: '', discount: 10, maxUses: 0 });
+      loadCoupons();
+    } catch (err: any) {
+      toast(`Failed to create coupon: ${err.message}`, 'error');
+    }
+  }
+
+  async function handleDeleteCoupon(id: string, code: string) {
+    setConfirmModal({
+      show: true,
+      title: 'DELETE_COUPON',
+      message: `Are you sure you want to permanently delete coupon ${code}?`,
+      confirmText: 'YES, DELETE',
+      accentColor: C.red,
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, show: false }));
+        try {
+          const { error } = await supabase.rpc('delete_coupon', { p_id: id });
+          if (error) throw error;
+          toast('Coupon deleted.', 'info');
+          loadCoupons();
+        } catch (err: any) {
+          toast(`Deletion failed: ${err.message}`, 'error');
+        }
+      }
+    });
+  }
+
+  useEffect(() => {
+    if (activeTab === 'PREDICTIONS') loadPredictions();
+    if (activeTab === 'COUPONS') loadCoupons();
+  }, [activeTab]);
+
+  async function handleAnnounceWinners() {
+    const p = cmsData.PREDICT_WIN;
+    if (!p.final_score_team1 && !p.final_score_team2 && p.final_score_team1 !== 0) {
+      toast('Please set the final scores in CMS first!', 'error');
+      return;
+    }
+
+    const winners = predictions.filter(
+      pr => pr.team1_score === p.final_score_team1 && pr.team2_score === p.final_score_team2
+    );
+
+    if (winners.length === 0) {
+      toast('No correct predictions found for these scores.', 'info');
+      return;
+    }
+
+    setConfirmModal({
+      show: true,
+      title: 'ANNOUNCE WINNERS',
+      message: `We found ${winners.length} correct predictions. This will send automated reward emails to all winners immediately. Are you sure?`,
+      confirmText: 'YES, SEND REWARDS',
+      accentColor: C.yellow,
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, show: false }));
+        setIsAnnouncing(true);
+        try {
+          const { mailService } = await import('../services/mailService');
+          for (const w of winners) {
+            await mailService.sendReward(
+              w.email, 
+              p.team1, 
+              p.team2, 
+              p.final_score_team1, 
+              p.final_score_team2, 
+              p.prize
+            );
+          }
+          toast(`Successfully sent ${winners.length} rewards!`, 'success');
+        } catch (err: any) {
+          toast(`Error sending rewards: ${err.message}`, 'error');
+        } finally {
+          setIsAnnouncing(false);
+        }
+      }
+    });
   }
 
   // Capacity state
@@ -80,6 +300,7 @@ export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
       const data = await bookingService.getAllCms();
       if (Object.keys(data).length > 0) {
         setCmsData(prev => ({ ...prev, ...data }));
+        localStorage.setItem('fire_smoke_cms_v2', JSON.stringify({ ...cmsData, ...data }));
       }
     } catch (err) {
       console.error('Failed to load CMS data');
@@ -92,7 +313,8 @@ export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
       setIsSavingCms(true);
       const content = cmsData[selectedCmsKey];
       await bookingService.updateCms(selectedCmsKey, content);
-      toast(`${selectedCmsKey} saved successfully.`, 'success');
+      localStorage.setItem('fire_smoke_cms_v2', JSON.stringify(cmsData));
+      toast(`${selectedCmsKey} saved and synced successfully.`, 'success');
     } catch (err: any) {
       toast(`Save failed: ${err.message}`, 'error');
     } finally {
@@ -101,32 +323,83 @@ export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
   }
 
   function updateField(path: string[], value: any) {
+    console.log('UPDATING FIELD:', path, value);
     setCmsData(prev => {
-      const newData = { ...prev };
-      let current = newData[selectedCmsKey];
+      const updateDeep = (obj: any, p: string[], val: any): any => {
+        if (p.length === 0) return val;
+        const [head, ...tail] = p;
+        if (Array.isArray(obj)) {
+          const newArr = [...obj];
+          const idx = parseInt(head);
+          newArr[idx] = updateDeep(newArr[idx], tail, val);
+          return newArr;
+        } else {
+          return {
+            ...obj,
+            [head]: updateDeep(obj[head], tail, val)
+          };
+        }
+      };
       
-      // Navigate to the target object
-      for (let i = 0; i < path.length - 1; i++) {
-        current = current[path[i]];
-      }
-      
-      // Update the value
-      current[path[path.length - 1]] = value;
-      return newData;
+      const newSectionData = updateDeep(prev[selectedCmsKey], path, value);
+      return {
+        ...prev,
+        [selectedCmsKey]: newSectionData
+      };
     });
   }
 
   const renderEditorFields = (data: any, path: string[] = []) => {
     if (typeof data === 'string') {
       const isLong = data.length > 50 || data.includes('\n');
-      const isImage = path[path.length - 1]?.toLowerCase().includes('image') || 
-                      path[path.length - 1]?.toLowerCase().includes('photo') ||
-                      path[path.length - 1]?.toLowerCase().includes('url');
+      
+      // Aggressive detection
+      const fieldName = (path[path.length - 1] || '').toLowerCase();
+      const parentName = (path[path.length - 2] || '').toLowerCase();
+      const grandParentName = (path[path.length - 3] || '').toLowerCase();
+      
+      const isUrlValue = data.startsWith('http') || data.startsWith('/photos/') || data.includes('cloudinary');
+      const isImageKey = fieldName.includes('image') || fieldName.includes('photo') || fieldName.includes('url') || fieldName.includes('src') ||
+                        parentName.includes('photo') || parentName.includes('gallery') || 
+                        grandParentName.includes('photo') || grandParentName.includes('gallery');
+
+      const isImage = isImageKey || isUrlValue;
+
+      if (typeof data === 'boolean' || fieldName === 'active') {
+        return (
+          <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div 
+              onClick={() => updateField(path, !data)}
+              style={{ 
+                width: 50, 
+                height: 24, 
+                background: data ? C.yellow : '#333', 
+                borderRadius: 12, 
+                position: 'relative', 
+                cursor: 'pointer',
+                transition: 'all 0.3s'
+              }}
+            >
+              <div style={{ 
+                width: 20, 
+                height: 20, 
+                background: data ? '#000' : '#888', 
+                borderRadius: '50%', 
+                position: 'absolute', 
+                top: 2, 
+                left: data ? 28 : 2,
+                transition: 'all 0.3s'
+              }} />
+            </div>
+            <span style={{ color: data ? C.yellow : '#666', fontFamily: F.mono, fontSize: 12 }}>{data ? 'ENABLED' : 'DISABLED'}</span>
+          </div>
+        );
+      }
 
       return (
         <div style={{ marginBottom: 16 }}>
-          {isImage && data && (
-            <img src={data} alt="Preview" style={{ maxWidth: 100, height: 60, objectFit: 'cover', border: `1px solid ${C.border}`, marginBottom: 8, display: 'block' }} />
+          {isImage && (
+            <ImageUpload value={data} onUpload={(url) => updateField(path, url)} />
           )}
           {isLong ? (
             <textarea 
@@ -201,13 +474,28 @@ export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
           ))}
           <button 
             onClick={() => {
-              const newItem = typeof data[0] === 'object' ? { ...data[0] } : (typeof data[0] === 'string' ? '' : 0);
-              // Clear strings/numbers in new object
-              if (typeof newItem === 'object') {
-                Object.keys(newItem).forEach(k => {
-                  if (typeof newItem[k] === 'string') newItem[k] = '';
-                });
+              // Deep clone first item as template
+              const template = data[0];
+              let newItem: any;
+              
+              if (typeof template === 'object' && template !== null) {
+                newItem = JSON.parse(JSON.stringify(template));
+                // Recursively clear values
+                const clear = (obj: any) => {
+                  Object.keys(obj).forEach(k => {
+                    if (typeof obj[k] === 'string') obj[k] = '';
+                    else if (typeof obj[k] === 'number') obj[k] = 0;
+                    else if (Array.isArray(obj[k])) obj[k] = [];
+                    else if (typeof obj[k] === 'object' && obj[k] !== null) clear(obj[k]);
+                  });
+                };
+                clear(newItem);
+              } else if (typeof template === 'string') {
+                newItem = '';
+              } else {
+                newItem = 0;
               }
+              
               updateField(path, [...data, newItem]);
             }}
             style={{ background: 'rgba(255,255,255,0.05)', color: C.yellow, border: `1px dashed ${C.yellow}`, padding: '12px', width: '100%', cursor: 'pointer', fontFamily: F.heavy, fontSize: 11 }}
@@ -309,17 +597,26 @@ export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
   }
 
   async function handleReject(id: string) {
-    if (!window.confirm('Are you sure you want to reject this booking?')) return;
-    setActionLoading(id);
-    try {
-      await bookingService.rejectBooking(id);
-      await loadBookings();
-      toast('Booking rejected.', 'info');
-    } catch (err) {
-      toast('Failed to reject booking.', 'error');
-    } finally {
-      setActionLoading(null);
-    }
+    setConfirmModal({
+      show: true,
+      title: 'REJECT BOOKING',
+      message: 'Are you sure you want to reject this booking? This will remove it from the active list.',
+      confirmText: 'YES, REJECT',
+      accentColor: '#ef4444',
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, show: false }));
+        setActionLoading(id);
+        try {
+          await bookingService.rejectBooking(id);
+          await loadBookings();
+          toast('Booking rejected.', 'info');
+        } catch (err) {
+          toast('Failed to reject booking.', 'error');
+        } finally {
+          setActionLoading(null);
+        }
+      }
+    });
   }
 
   async function handleResend(booking: Booking) {
@@ -367,6 +664,39 @@ export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
     <>
     <ToastContainer toasts={toasts} remove={remove} />
 
+    {/* ── Generic confirmation modal ── */}
+    {confirmModal.show && (
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+      }}>
+        <div style={{
+          background: '#0a0a0a', border: `1px solid ${confirmModal.accentColor || C.yellow}`,
+          maxWidth: 480, width: '100%', padding: 40, boxShadow: '0 0 50px rgba(0,0,0,0.5)'
+        }}>
+          <div style={{ fontFamily: F.display, fontSize: 12, color: confirmModal.accentColor || C.yellow, letterSpacing: 3, marginBottom: 20 }}>{confirmModal.title}</div>
+          <p style={{ fontFamily: F.mono, fontSize: 16, color: '#fff', margin: '0 0 32px', lineHeight: 1.6 }}>
+            {confirmModal.message}
+          </p>
+          <div style={{ display: 'flex', gap: 16 }}>
+            <button
+              onClick={() => setConfirmModal(prev => ({ ...prev, show: false }))}
+              style={{ flex: 1, background: 'transparent', border: `1px solid #333`, color: '#666', padding: '14px', cursor: 'pointer', fontFamily: F.mono, fontSize: 13, fontWeight: 700 }}
+            >
+              CANCEL
+            </button>
+            <button
+              onClick={confirmModal.onConfirm}
+              style={{ flex: 1, background: confirmModal.accentColor || C.yellow, border: 'none', color: '#000', padding: '14px', cursor: 'pointer', fontFamily: F.display, fontSize: 13, fontWeight: 900 }}
+            >
+              {confirmModal.confirmText}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
     {/* ── Delete confirmation modal ── */}
     {deleteTarget && (
       <div style={{
@@ -405,6 +735,73 @@ export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
         </div>
       </div>
     )}
+
+    {/* ── Create Coupon Modal ── */}
+    {showCouponModal && (
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+      }}>
+        <div style={{
+          background: '#0a0a0a', border: `1px solid ${C.yellow}`,
+          maxWidth: 480, width: '100%', padding: 40, boxShadow: '0 0 50px rgba(0,0,0,0.5)'
+        }}>
+          <div style={{ fontFamily: F.display, fontSize: 12, color: C.yellow, letterSpacing: 3, marginBottom: 20 }}>CREATE NEW COUPON</div>
+          
+          <div style={{ marginBottom: 20 }}>
+            <label style={{ display: 'block', fontFamily: F.mono, fontSize: 11, color: '#888', marginBottom: 8, letterSpacing: 1 }}>COUPON CODE</label>
+            <input 
+              type="text" 
+              value={newCoupon.code} 
+              onChange={e => setNewCoupon(prev => ({ ...prev, code: e.target.value.toUpperCase() }))}
+              style={{ width: '100%', background: '#111', border: '1px solid #333', color: '#fff', padding: '12px', fontFamily: F.mono, fontSize: 14 }}
+              placeholder="e.g. VIP2024"
+            />
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <label style={{ display: 'block', fontFamily: F.mono, fontSize: 11, color: '#888', marginBottom: 8, letterSpacing: 1 }}>DISCOUNT PERCENTAGE (%)</label>
+            <input 
+              type="number" 
+              min="0" max="100"
+              value={newCoupon.discount} 
+              onChange={e => setNewCoupon(prev => ({ ...prev, discount: parseInt(e.target.value) || 0 }))}
+              style={{ width: '100%', background: '#111', border: '1px solid #333', color: '#fff', padding: '12px', fontFamily: F.mono, fontSize: 14 }}
+            />
+          </div>
+
+          <div style={{ marginBottom: 32 }}>
+            <label style={{ display: 'block', fontFamily: F.mono, fontSize: 11, color: '#888', marginBottom: 8, letterSpacing: 1 }}>MAX USES (0 for unlimited)</label>
+            <input 
+              type="number" 
+              min="0"
+              value={newCoupon.maxUses} 
+              onChange={e => setNewCoupon(prev => ({ ...prev, maxUses: parseInt(e.target.value) || 0 }))}
+              style={{ width: '100%', background: '#111', border: '1px solid #333', color: '#fff', padding: '12px', fontFamily: F.mono, fontSize: 14 }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: 16 }}>
+            <button
+              onClick={() => {
+                setShowCouponModal(false);
+                setNewCoupon({ code: '', discount: 10, maxUses: 0 });
+              }}
+              style={{ flex: 1, background: 'transparent', border: `1px solid #333`, color: '#666', padding: '14px', cursor: 'pointer', fontFamily: F.mono, fontSize: 13, fontWeight: 700 }}
+            >
+              CANCEL
+            </button>
+            <button
+              onClick={handleCreateCoupon}
+              style={{ flex: 1, background: C.yellow, border: 'none', color: '#000', padding: '14px', cursor: 'pointer', fontFamily: F.display, fontSize: 13, fontWeight: 900 }}
+            >
+              CREATE COUPON
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     <div className="admin-shell" style={{ background: C.bg, minHeight: '100vh', color: C.text, fontFamily: F.mono }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <header className="admin-header" style={{ color: C.text }}>
@@ -432,8 +829,8 @@ export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
         </header>
 
         {/* Tab Switcher */}
-        <div className="admin-tabs">
-          {(['GUESTS', 'LOGISTICS', 'CMS'] as const).map(t => (
+        <div className="admin-tabs" style={{ display: 'flex', gap: 4, background: '#000', padding: 4, border: `1px solid ${C.border}`, marginBottom: 32 }}>
+          {(['GUESTS', 'LOGISTICS', 'CMS', 'PREDICTIONS', 'COUPONS'] as const).map(t => (
             <button 
               key={t}
               className="admin-tab"
@@ -441,8 +838,13 @@ export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
               style={{ 
                 background: activeTab === t ? C.yellow : 'transparent', 
                 color: activeTab === t ? C.bg : C.text,
-                border: activeTab === t ? 'none' : `1px solid ${C.border}`,
-                fontFamily: F.display,
+                border: 'none',
+                padding: '8px 16px',
+                fontFamily: F.heavy,
+                fontSize: 10,
+                cursor: 'pointer',
+                letterSpacing: 1,
+                flex: 1
               }}
             >
               {t}
@@ -609,46 +1011,124 @@ export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
             >
               {Object.keys(cmsData).sort().map(k => <option key={k} value={k}>{k}</option>)}
             </select>
-            <div className="cms-grid">
-              {/* Section List — hidden on mobile, replaced by select above */}
-              <div className="cms-section-list">
+            <div className="cms-grid" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 0, border: `1px solid ${C.border}`, background: C.surface, minHeight: 600 }}>
+              {/* Section List */}
+              <div style={{ 
+                borderRight: `1px solid ${C.border}`, 
+                padding: 20, 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: 8,
+                background: 'rgba(0,0,0,0.2)'
+              }}>
                 {Object.keys(cmsData).sort().map(key => (
-                  <button 
+                  <button
                     key={key}
                     onClick={() => setSelectedCmsKey(key)}
-                    style={{ 
-                      padding: '12px 16px', 
-                      textAlign: 'left', 
-                      background: selectedCmsKey === key ? C.yellow : 'rgba(255,255,255,0.05)', 
-                      color: selectedCmsKey === key ? C.bg : C.text,
+                    style={{
+                      textAlign: 'left',
+                      padding: '12px 16px',
+                      background: selectedCmsKey === key ? C.yellow : 'transparent',
+                      color: selectedCmsKey === key ? '#000' : C.text,
                       border: 'none',
-                      fontFamily: F.mono,
-                      fontSize: 12,
-                      fontWeight: 700,
                       cursor: 'pointer',
-                      letterSpacing: 1
+                      fontFamily: F.heavy,
+                      fontSize: 11,
+                      letterSpacing: 1,
+                      transition: 'all 0.2s'
                     }}
                   >
                     {key}
                   </button>
                 ))}
+                
+                <div style={{ marginTop: 'auto', paddingTop: 20, borderTop: `1px solid ${C.border}` }}>
+                  <button
+                    onClick={() => {
+                      setConfirmModal({
+                        show: true,
+                        title: 'SAFE_MERGE_CONTENT',
+                        message: 'This will add missing fields (like new prediction settings or photos) to your existing content without overwriting your current text. Continue?',
+                        confirmText: 'PROCEED_WITH_MERGE',
+                        accentColor: C.yellow,
+                        onConfirm: async () => {
+                          setConfirmModal(prev => ({ ...prev, show: false }));
+                          try {
+                            const keys = Object.keys(staticData).filter(k => Array.isArray((staticData as any)[k]) || typeof (staticData as any)[k] === 'object');
+                            const currentDbData = await bookingService.getAllCms();
+                            // ... rest of the merge logic below ...
+                          
+                          for (const k of keys) {
+                            const local = (staticData as any)[k];
+                            const remote = currentDbData[k];
+                            
+                            if (remote) {
+                              // Deep merge missing keys from local to remote
+                              const merge = (loc: any, rem: any) => {
+                                if (Array.isArray(loc) && Array.isArray(rem)) {
+                                  rem.forEach((item, i) => {
+                                    if (loc[i]) merge(loc[i], item);
+                                  });
+                                  // If local has more items than remote, we don't add them to be safe, 
+                                  // but we could if we wanted to. Let's just focus on adding missing keys to existing items.
+                                } else if (typeof loc === 'object' && loc !== null && typeof rem === 'object' && rem !== null) {
+                                  Object.keys(loc).forEach(key => {
+                                    if (!(key in rem)) {
+                                      rem[key] = loc[key]; // Add missing field
+                                    } else {
+                                      merge(loc[key], rem[key]); // Recurse
+                                    }
+                                  });
+                                }
+                              };
+                              merge(local, remote);
+                              await bookingService.updateCms(k, remote);
+                            } else {
+                              // If key doesn't exist in DB at all, just push local
+                              await bookingService.updateCms(k, local);
+                            }
+                          }
+                          toast('Database safely merged with new schema.', 'success');
+                          loadCms();
+                        } catch (err: any) {
+                          toast(`Merge failed: ${err.message}`, 'error');
+                        }
+                      }
+                    });
+                  }}
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      background: 'rgba(255,255,255,0.05)',
+                      color: C.yellow,
+                      border: `1px solid ${C.yellow}`,
+                      cursor: 'pointer',
+                      fontFamily: F.mono,
+                      fontSize: 10,
+                      textAlign: 'center'
+                    }}
+                  >
+                    SAFE_MERGE_DB_SCHEMA
+                  </button>
+                </div>
               </div>
 
-              {/* Editor */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ fontFamily: F.mono, fontSize: 11, color: C.dim }}>SECTION: <span style={{ color: C.yellow }}>{selectedCmsKey}</span></div>
+              {/* Editor Area */}
+              <div style={{ padding: 40, overflowY: 'auto', maxHeight: '80vh' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+                  <div>
+                    <span style={{ fontSize: 10, color: C.dim, fontFamily: F.mono }}>SECTION:</span>
+                    <span style={{ marginLeft: 8, fontFamily: F.heavy, fontSize: 14, color: C.yellow }}>{selectedCmsKey}</span>
+                  </div>
                   <button 
                     onClick={handleSaveCms}
                     disabled={isSavingCms}
-                    style={{ background: C.yellow, color: C.bg, border: 'none', padding: '8px 24px', fontFamily: F.heavy, cursor: 'pointer', boxShadow: '0 4px 14px rgba(250, 204, 21, 0.3)' }}
+                    style={{ background: C.yellow, color: C.bg, border: 'none', padding: '12px 24px', fontFamily: F.heavy, fontSize: 13, cursor: 'pointer', boxShadow: '0 4px 14px rgba(250, 204, 21, 0.3)' }}
                   >
                     {isSavingCms ? 'SAVING...' : 'PUBLISH_CHANGES'}
                   </button>
                 </div>
-                <div style={{ height: 600, overflowY: 'auto', paddingRight: 20, border: `1px solid rgba(255,255,255,0.05)`, background: 'rgba(0,0,0,0.2)', padding: 24 }}>
-                  {cmsData[selectedCmsKey] ? renderEditorFields(cmsData[selectedCmsKey]) : <div style={{ color: C.dim }}>Select a section to edit.</div>}
-                </div>
+                {renderEditorFields(cmsData[selectedCmsKey], [])}
               </div>
             </div>
           </div>
@@ -831,9 +1311,164 @@ export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
                 })}
                 {filtered.length === 0 && <div style={{ padding: 40, textAlign: 'center', color: C.dim }}>No bookings found.</div>}
               </div>
-              </>
-            )}
+            </>
+          )}
           </>
+        )}
+
+        {activeTab === 'COUPONS' && (
+          <div style={{ animation: 'ss-fade-in 0.4s' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+              <h2 style={{ fontFamily: F.display, fontSize: 32, margin: 0, letterSpacing: -1 }}>ACTIVE_COUPONS</h2>
+              <button
+                onClick={() => setShowCouponModal(true)}
+                style={{ background: C.yellow, color: C.bg, border: 'none', padding: '10px 20px', fontFamily: F.heavy, fontSize: 12, cursor: 'pointer' }}
+              >
+                + NEW_COUPON
+              </button>
+            </div>
+
+            <div style={{ background: C.panel, border: `1px solid ${C.border}`, overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                <thead style={{ background: '#000', borderBottom: `1px solid ${C.border}` }}>
+                  <tr>
+                    <th style={{ padding: 16, fontFamily: F.mono, fontSize: 10, color: C.dim }}>CODE</th>
+                    <th style={{ padding: 16, fontFamily: F.mono, fontSize: 10, color: C.dim }}>DISCOUNT</th>
+                    <th style={{ padding: 16, fontFamily: F.mono, fontSize: 10, color: C.dim }}>USAGE</th>
+                    <th style={{ padding: 16, fontFamily: F.mono, fontSize: 10, color: C.dim }}>STATUS</th>
+                    <th style={{ padding: 16, fontFamily: F.mono, fontSize: 10, color: C.dim }}>ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {coupons.map((c) => (
+                    <tr key={c.id} style={{ borderBottom: `1px solid ${C.border}` }}>
+                      <td style={{ padding: 16, fontFamily: F.heavy, fontSize: 14 }}>{c.code}</td>
+                      <td style={{ padding: 16, color: C.yellow, fontFamily: F.mono, fontSize: 14 }}>{c.discount_percent}% OFF</td>
+                      <td style={{ padding: 16, fontFamily: F.mono, fontSize: 14 }}>{c.current_uses} / {c.max_uses === 0 ? '∞' : c.max_uses}</td>
+                      <td style={{ padding: 16 }}>
+                        <span style={{ 
+                          fontSize: 10, 
+                          padding: '4px 8px', 
+                          background: c.is_active ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                          color: c.is_active ? '#22c55e' : '#ef4444',
+                          border: `1px solid ${c.is_active ? '#22c55e' : '#ef4444'}`,
+                          fontFamily: F.mono,
+                          fontWeight: 700
+                        }}>
+                          {c.is_active ? 'ACTIVE' : 'INACTIVE'}
+                        </span>
+                      </td>
+                      <td style={{ padding: 16 }}>
+                        <button 
+                          onClick={() => handleDeleteCoupon(c.id, c.code)}
+                          style={{ background: 'transparent', border: 'none', color: C.red, cursor: 'pointer', fontFamily: F.mono, fontSize: 12 }}
+                        >
+                          DELETE
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {coupons.length === 0 && (
+                    <tr>
+                      <td colSpan={5} style={{ padding: 40, textAlign: 'center', color: C.dim, fontFamily: F.mono }}>NO_COUPONS_FOUND</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+        {activeTab === 'PREDICTIONS' && (
+          <div className="tab-pane">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+              <div>
+                <h2 style={{ fontFamily: F.heavy, fontSize: 24, margin: 0 }}>PREDICTIONS_TRACKER</h2>
+                <p style={{ color: C.textMuted, fontSize: 12, marginTop: 4 }}>Manage user predictions and distribute rewards.</p>
+              </div>
+              <button 
+                onClick={handleAnnounceWinners}
+                disabled={isAnnouncing}
+                style={{ 
+                  background: C.yellow, color: '#000', border: 'none', 
+                  padding: '12px 24px', fontFamily: F.heavy, fontSize: 13, 
+                  cursor: isAnnouncing ? 'not-allowed' : 'pointer' 
+                }}
+              >
+                {isAnnouncing ? 'SENDING_REWARDS...' : 'ANNOUNCE_WINNERS'}
+              </button>
+            </div>
+
+            <div style={{ background: C.surface, border: `1px solid ${C.border}`, padding: 24, marginBottom: 24 }}>
+              <h3 style={{ fontFamily: F.heavy, fontSize: 14, marginBottom: 16 }}>MATCH_RESULT_INPUT</h3>
+              <div style={{ display: 'flex', gap: 24 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 10, color: C.textMuted, marginBottom: 8 }}>{cmsData.PREDICT_WIN.team1} SCORE</label>
+                  <input 
+                    type="number"
+                    value={cmsData.PREDICT_WIN.final_score_team1 ?? 0}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value);
+                      const updated = { ...cmsData };
+                      updated.PREDICT_WIN.final_score_team1 = isNaN(val) ? 0 : val;
+                      setCmsData(updated);
+                    }}
+                    style={{ background: '#000', border: `1px solid ${C.border}`, color: '#fff', padding: 12, width: 80, fontSize: 20, textAlign: 'center' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', paddingTop: 20 }}>VS</div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 10, color: C.textMuted, marginBottom: 8 }}>{cmsData.PREDICT_WIN.team2} SCORE</label>
+                  <input 
+                    type="number"
+                    value={cmsData.PREDICT_WIN.final_score_team2 ?? 0}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value);
+                      const updated = { ...cmsData };
+                      updated.PREDICT_WIN.final_score_team2 = isNaN(val) ? 0 : val;
+                      setCmsData(updated);
+                    }}
+                    style={{ background: '#000', border: `1px solid ${C.border}`, color: '#fff', padding: 12, width: 80, fontSize: 20, textAlign: 'center' }}
+                  />
+                </div>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end' }}>
+                  <p style={{ fontSize: 11, color: C.dim, margin: 0 }}>Setting these scores will allow you to trigger the <b>ANNOUNCE_WINNERS</b> flow above.</p>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: `1px solid ${C.border}` }}>
+                    <th style={{ textAlign: 'left', padding: '16px 24px', fontSize: 10, fontFamily: F.mono, color: C.textMuted }}>TIMESTAMP</th>
+                    <th style={{ textAlign: 'left', padding: '16px 24px', fontSize: 10, fontFamily: F.mono, color: C.textMuted }}>EMAIL</th>
+                    <th style={{ textAlign: 'center', padding: '16px 24px', fontSize: 10, fontFamily: F.mono, color: C.textMuted }}>PREDICTION</th>
+                    <th style={{ textAlign: 'right', padding: '16px 24px', fontSize: 10, fontFamily: F.mono, color: C.textMuted }}>STATUS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {predictions.map((p, idx) => {
+                    const isWinner = p.team1_score === cmsData.PREDICT_WIN.final_score_team1 && 
+                                   p.team2_score === cmsData.PREDICT_WIN.final_score_team2;
+                    return (
+                      <tr key={idx} style={{ borderBottom: `1px solid ${C.border}`, background: isWinner ? 'rgba(250, 204, 21, 0.05)' : 'transparent' }}>
+                        <td style={{ padding: '16px 24px', fontSize: 12, color: C.textMuted }}>{new Date(p.created_at).toLocaleString()}</td>
+                        <td style={{ padding: '16px 24px', fontSize: 13, fontFamily: F.mono }}>{p.email}</td>
+                        <td style={{ padding: '16px 24px', fontSize: 14, textAlign: 'center', fontWeight: 700 }}>{p.team1_score} - {p.team2_score}</td>
+                        <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                          {isWinner ? (
+                            <span style={{ background: C.yellow, color: '#000', fontSize: 9, fontWeight: 900, padding: '2px 6px', borderRadius: 2 }}>WINNER</span>
+                          ) : (
+                            <span style={{ color: C.dim, fontSize: 10 }}>—</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
         )}
       </div>
     </div>

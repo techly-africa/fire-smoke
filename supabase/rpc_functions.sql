@@ -30,10 +30,12 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-  UPDATE cms
-  SET content    = p_content,
-      updated_at = NOW()
-  WHERE section_key = p_key;
+  INSERT INTO cms (section_key, content, updated_at)
+  VALUES (p_key, p_content, NOW())
+  ON CONFLICT (section_key) 
+  DO UPDATE SET 
+    content    = EXCLUDED.content,
+    updated_at = EXCLUDED.updated_at;
 END;
 $$;
 
@@ -114,5 +116,30 @@ SECURITY DEFINER
 AS $$
 BEGIN
   DELETE FROM bookings WHERE id = p_id;
+END;
+$$;
+
+-- 7. create_coupon
+--    Used by AdminDashboard to add new discount codes.
+CREATE OR REPLACE FUNCTION create_coupon(p_code TEXT, p_discount_percent INTEGER, p_max_uses INTEGER DEFAULT 0)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  INSERT INTO coupons (code, discount_percent, max_uses, is_active)
+  VALUES (UPPER(p_code), p_discount_percent, p_max_uses, true);
+END;
+$$;
+
+-- 8. delete_coupon
+--    Used by AdminDashboard to remove coupons.
+CREATE OR REPLACE FUNCTION delete_coupon(p_id UUID)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  DELETE FROM coupons WHERE id = p_id;
 END;
 $$;

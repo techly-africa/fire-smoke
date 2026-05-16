@@ -99,35 +99,61 @@ export const WHATS_NEW: WhatsNew[] = [
     title: 'Different protein types',
     sub: 'Pork ribs, lamb chops, chicken, beef, fish — all on the fire.',
     detail: 'This edition we\'re going all out on the grill. Expect slow-smoked pork ribs with a honey-chilli glaze, lamb chops marinated overnight in rosemary and akabanga, whole chicken butterflied on the barrel, and a fresh-catch fish station. Every protein gets its own sauce pairing — no overlap, no compromise.',
-    photos: ['/photos/p01-grill-portrait.jpeg', '/photos/p02-grill-closeup.jpeg', '/photos/p10-basting.jpeg', '/photos/p11-chef-bandana.jpeg'],
+    photos: [
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930187/fire-smoke/gallery/fire-smoke/gallery/p01-grill-portrait.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930195/fire-smoke/gallery/fire-smoke/gallery/p02-grill-closeup.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930233/fire-smoke/gallery/fire-smoke/gallery/p10-basting.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930237/fire-smoke/gallery/fire-smoke/gallery/p11-chef-bandana.jpg',
+    ],
   },
   {
     icon: 'music',
     title: 'Daytime music',
     sub: 'Live afrobeat + amapiano DJ set under the pines.',
     detail: 'Bruno K. is back on the decks with a 6-hour daytime set that moves from chill afrobeats at gates-open through peak amapiano when the sauce battle hits. No hard drops, no strobes — just the right groove for forest air, smoke rising, and everyone loosening up after noon.',
-    photos: ['/photos/p07-crowd.jpeg', '/photos/p05-wide-forest.jpeg', '/photos/p09-picnic.jpeg', '/photos/p14-sitting.jpeg'],
+    photos: [
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930224/fire-smoke/gallery/fire-smoke/gallery/p07-crowd.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930215/fire-smoke/gallery/fire-smoke/gallery/p05-wide-forest.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930231/fire-smoke/gallery/fire-smoke/gallery/p09-picnic.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930253/fire-smoke/gallery/fire-smoke/gallery/p14-sitting.jpg',
+    ],
   },
   {
     icon: 'games',
     title: 'Games corner',
     sub: 'Jenga tower, UNO marathon, cup-pong, charades.',
     detail: 'The games corner is back, bigger and more chaotic. We\'re running Jenga on a 1.2m tower (yes, it will fall), a full UNO bracket with elimination rounds, cup-pong on two tables, and a loud charades station that\'ll keep the energy up between grill turns. Bring a game too — if it\'s good, it joins the rotation.',
-    photos: ['/photos/p04-three-friends.jpeg', '/photos/p03-grill-smile.jpeg', '/photos/p12-kamado.jpeg', '/photos/p07-crowd.jpeg'],
+    photos: [
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930210/fire-smoke/gallery/fire-smoke/gallery/p04-three-friends.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930207/fire-smoke/gallery/fire-smoke/gallery/p03-grill-smile.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930240/fire-smoke/gallery/fire-smoke/gallery/p12-kamado.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930224/fire-smoke/gallery/fire-smoke/gallery/p07-crowd.jpg',
+    ],
   },
   {
     icon: 'sauce',
     title: 'Sauce battle',
     sub: 'Blind taste 6 house sauces. Loser pays the next round.',
     detail: 'Six mystery sauces, blind tasting, one winner per table. Ines has spent three weeks on the lineup — some are regional classics with a twist, some are pure pain. You won\'t know which is which until you\'ve already committed. The table with the highest group accuracy wins a round of drinks. The table that quits early... pays for it.',
-    photos: ['/photos/p11-chef-bandana.jpeg', '/photos/p06-barrel-grill.jpeg', '/photos/p02-grill-closeup.jpeg', '/photos/p10-basting.jpeg'],
+    photos: [
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930237/fire-smoke/gallery/fire-smoke/gallery/p11-chef-bandana.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930219/fire-smoke/gallery/fire-smoke/gallery/p06-barrel-grill.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930195/fire-smoke/gallery/fire-smoke/gallery/p02-grill-closeup.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930233/fire-smoke/gallery/fire-smoke/gallery/p10-basting.jpg',
+    ],
   },
   {
     icon: 'camera',
     title: 'Forest photo moments',
     sub: 'A roaming shooter + a polaroid wall to take home.',
     detail: 'This edition we have a dedicated roaming photographer capturing the fire, the games, the food and the faces. Every photo lands in an album shared with guests by end of day. We\'re also running a polaroid wall — get your instant print and pin it to the board, or take it home. The wall stays up until the last guest leaves.',
-    photos: ['/photos/p05-wide-forest.jpeg', '/photos/p08-rainy-group.jpeg', '/photos/p14-sitting.jpeg', '/photos/p13-peace.jpeg', '/photos/p03-grill-smile.jpeg'],
+    photos: [
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930215/fire-smoke/gallery/fire-smoke/gallery/p05-wide-forest.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930227/fire-smoke/gallery/fire-smoke/gallery/p08-rainy-group.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930253/fire-smoke/gallery/fire-smoke/gallery/p14-sitting.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930244/fire-smoke/gallery/fire-smoke/gallery/p13-peace.jpg',
+      'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930207/fire-smoke/gallery/fire-smoke/gallery/p03-grill-smile.jpg',
+    ],
   },
 ];
 
@@ -166,16 +192,16 @@ export const SCHEDULE: ScheduleRow[] = [
 ];
 
 export const GALLERY: GalleryItem[] = [
-  { src: '/photos/p01-grill-portrait.jpeg', caption: 'Marinade run' },
-  { src: '/photos/p02-grill-closeup.jpeg',  caption: 'Low and slow' },
-  { src: '/photos/p11-chef-bandana.jpeg',   caption: 'Sauce on sauce' },
-  { src: '/photos/p04-three-friends.jpeg',  caption: 'Posse' },
-  { src: '/photos/p07-crowd.jpeg',          caption: 'The crew' },
-  { src: '/photos/p09-picnic.jpeg',         caption: 'Hilltop picnic' },
-  { src: '/photos/p10-basting.jpeg',        caption: 'Basting hour' },
-  { src: '/photos/p12-kamado.jpeg',         caption: 'Kamado smile' },
-  { src: '/photos/p06-barrel-grill.jpeg',   caption: 'The barrel' },
-  { src: '/photos/p13-peace.jpeg',          caption: 'Peace + lemonade' },
+  { src: 'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930187/fire-smoke/gallery/fire-smoke/gallery/p01-grill-portrait.jpg', caption: 'Marinade run' },
+  { src: 'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930195/fire-smoke/gallery/fire-smoke/gallery/p02-grill-closeup.jpg',  caption: 'Low and slow' },
+  { src: 'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930237/fire-smoke/gallery/fire-smoke/gallery/p11-chef-bandana.jpg',   caption: 'Sauce on sauce' },
+  { src: 'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930210/fire-smoke/gallery/fire-smoke/gallery/p04-three-friends.jpg',  caption: 'Posse' },
+  { src: 'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930224/fire-smoke/gallery/fire-smoke/gallery/p07-crowd.jpg',          caption: 'The crew' },
+  { src: 'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930231/fire-smoke/gallery/fire-smoke/gallery/p09-picnic.jpg',         caption: 'Hilltop picnic' },
+  { src: 'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930233/fire-smoke/gallery/fire-smoke/gallery/p10-basting.jpg',        caption: 'Basting hour' },
+  { src: 'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930240/fire-smoke/gallery/fire-smoke/gallery/p12-kamado.jpg',         caption: 'Kamado smile' },
+  { src: 'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930219/fire-smoke/gallery/fire-smoke/gallery/p06-barrel-grill.jpg',   caption: 'The barrel' },
+  { src: 'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930244/fire-smoke/gallery/fire-smoke/gallery/p13-peace.jpg',          caption: 'Peace + lemonade' },
 ];
 
 export const TESTIMONIALS: Testimonial[] = [
@@ -240,3 +266,18 @@ export const QUIZ: QuizQuestion[] = [
     fact: "Charcoal for heat stability, wood chunks on top for the smoke perfume.",
   },
 ];
+
+export const PREDICT_WIN = {
+  title: 'Champions League Final',
+  match: 'REAL MADRID vs MAN CITY',
+  team1: 'REAL MADRID',
+  team2: 'MAN CITY',
+  date: 'MAY 30, 2026',
+  time: '21:00 CAT',
+  prize: 'A Round of Drinks + 50% Off Your Next Ticket',
+  description: 'Predict the final score of the biggest game in football. Every correct prediction enters a raffle for our grand prize of the night.',
+  active: true,
+  final_score_team1: 0,
+  final_score_team2: 0,
+  image: 'https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930215/fire-smoke/gallery/fire-smoke/gallery/p05-wide-forest.jpg'
+};

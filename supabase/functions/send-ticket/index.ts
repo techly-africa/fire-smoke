@@ -21,9 +21,15 @@ serve(async (req) => {
   }
 
   try {
-    const { booking, html } = await req.json()
+    const payload = await req.json()
+    const { booking, html, subject, email: directEmail } = payload
+    
+    const targetEmail = directEmail || booking?.email
+    const targetSubject = subject || 'Your ticket on behalf of Fire & Smoke'
 
-    console.log('Sending email to:', booking.email);
+    if (!targetEmail) throw new Error('No recipient email provided')
+
+    console.log('Sending email to:', targetEmail);
     
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -33,8 +39,8 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         from: 'Fire & Smoke <noreply@avel.africa>',
-        to: [booking.email],
-        subject: 'Your ticket on behalf of Fire & Smoke',
+        to: [targetEmail],
+        subject: targetSubject,
         html: html,
       }),
     })

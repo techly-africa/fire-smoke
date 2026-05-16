@@ -81,5 +81,82 @@ export const mailService = {
       console.error('Error sending email via Supabase Function:', err);
       throw err;
     }
-  }
+  },
+
+  async sendReward(email: string, team1: string, team2: string, score1: number, score2: number, prize: string) {
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { margin: 0; padding: 0; background-color: #050505; color: #ffffff; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+          .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; background-color: #0a0a0a; border: 1px solid #1a1a1a; }
+          .header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #fde047; padding-bottom: 20px; }
+          .logo { font-size: 28px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; }
+          .logo span { color: #fde047; }
+          .winner-tag { background-color: #fde047; color: #000; display: inline-block; padding: 4px 12px; font-weight: 900; font-size: 11px; letter-spacing: 2px; margin-bottom: 20px; text-transform: uppercase; }
+          .content { text-align: center; }
+          .match-title { font-size: 12px; color: #666; letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase; }
+          .match-score { font-size: 32px; font-weight: 900; margin-bottom: 32px; color: #fff; }
+          .prize-box { background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%); padding: 32px; border: 1px solid #333; border-radius: 4px; margin: 40px 0; }
+          .prize-label { font-size: 10px; color: #fde047; font-weight: 700; letter-spacing: 2px; margin-bottom: 12px; text-transform: uppercase; }
+          .prize-value { font-size: 24px; font-weight: 900; line-height: 1.2; text-transform: uppercase; }
+          .code-box { margin-top: 32px; padding: 20px; border: 1px dashed #444; background: rgba(253, 224, 71, 0.05); }
+          .code-label { font-size: 9px; color: #666; margin-bottom: 8px; text-transform: uppercase; }
+          .code-value { font-family: 'Courier New', Courier, monospace; font-size: 20px; font-weight: 900; color: #fde047; }
+          .footer { text-align: center; margin-top: 60px; font-size: 11px; color: #444; line-height: 1.6; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="logo">FIRE <span>&</span> SMOKE</div>
+          </div>
+          
+          <div class="content">
+            <div class="winner-tag">Winner Announced</div>
+            <h1 style="font-size: 48px; margin: 0 0 16px 0; letter-spacing: -2px;">YOU CALLED IT.</h1>
+            <p style="color: #888; font-size: 16px; margin-bottom: 40px;">Your prediction for the match was spot on.</p>
+            
+            <div class="match-title">${team1} vs ${team2}</div>
+            <div class="match-score">${score1} - ${score2}</div>
+            
+            <div class="prize-box">
+              <div class="prize-label">YOUR EXCLUSIVE REWARD</div>
+              <div class="prize-value">${prize}</div>
+              
+              <div class="code-box">
+                <div class="code-label">Redeem at the bar with this code:</div>
+                <div class="code-value">CHAMPION26</div>
+              </div>
+            </div>
+            
+            <p style="color: #444; font-size: 12px;">Valid only at the next event. Screenshots allowed.</p>
+          </div>
+
+          <div class="footer">
+            © 2026 FIRE & SMOKE. ALL RIGHTS RESERVED.<br>
+            KIGALI, RWANDA
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    try {
+      const { data, error } = await supabase.functions.invoke('send-ticket', {
+        body: { 
+          email, 
+          html,
+          subject: `🎉 Winner! Your ${prize} is here.`
+        }
+      });
+
+      if (error) throw error;
+      return data;
+    } catch (err) {
+      console.error('Error sending reward email:', err);
+      throw err;
+    }
+  },
 };

@@ -25,6 +25,33 @@ export function Checkout({ tier, qty, total, onClose, eventData }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Coupon state
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
+
+  const discount = appliedCoupon 
+    ? (appliedCoupon.discount_percent ? (total * appliedCoupon.discount_percent / 100) : appliedCoupon.discount_amount)
+    : 0;
+  
+  const finalTotal = Math.max(0, total - discount);
+
+  async function handleApplyCoupon() {
+    if (!couponCode.trim()) return;
+    setIsValidatingCoupon(true);
+    setCouponError(null);
+    try {
+      const coupon = await bookingService.validateCoupon(couponCode);
+      setAppliedCoupon(coupon);
+    } catch (err: any) {
+      setCouponError(err.message || 'Invalid coupon.');
+      setAppliedCoupon(null);
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  }
+
   async function submit() {
     setIsSubmitting(true);
     setError(null);
@@ -35,8 +62,9 @@ export function Checkout({ tier, qty, total, onClose, eventData }: Props) {
         phone: form.phone,
         tier_id: tier.id,
         quantity: qty,
-        total_price: total,
+        total_price: finalTotal,
         momo_reference: form.reference,
+        coupon_code: appliedCoupon?.code || undefined,
       });
       setStep(3);
     } catch (err: any) {
@@ -80,9 +108,21 @@ export function Checkout({ tier, qty, total, onClose, eventData }: Props) {
         {step === 1 && (
           <>
             <h3 style={{ fontFamily: F.display, fontSize: 'clamp(24px, 6vw, 32px)', margin: '0 0 14px', letterSpacing: -0.5, lineHeight: 1 }}>WHO'S COMING?</h3>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: 14, background: C.panel, color: C.yellow, fontFamily: F.mono, fontSize: 14, fontWeight: 700, marginBottom: 16 }}>
-              <span>{tier.name}{tier.id !== 'duo' && qty > 1 ? ` × ${qty}` : ''}</span>
-              <strong>{total.toLocaleString()} RWF</strong>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: 14, background: C.panel, border: `1px solid ${C.dashed}`, marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: C.yellow, fontFamily: F.mono, fontSize: 14, fontWeight: 700 }}>
+                <span>{tier.name}{tier.id !== 'duo' && qty > 1 ? ` × ${qty}` : ''}</span>
+                <span>{total.toLocaleString()} RWF</span>
+              </div>
+              {appliedCoupon && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#22c55e', fontFamily: F.mono, fontSize: 12, fontWeight: 700 }}>
+                  <span>DISCOUNT ({appliedCoupon.code})</span>
+                  <span>- {discount.toLocaleString()} RWF</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: C.text, fontFamily: F.heavy, fontSize: 18, marginTop: 8, borderTop: `1px solid ${C.dashed}`, paddingTop: 8 }}>
+                <span>TOTAL DUE</span>
+                <span>{finalTotal.toLocaleString()} RWF</span>
+              </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {([
@@ -100,6 +140,38 @@ export function Checkout({ tier, qty, total, onClose, eventData }: Props) {
                   />
                 </label>
               ))}
+
+              {/* Coupon Section */}
+              <div style={{ marginTop: 8, padding: 16, background: 'rgba(255,255,255,0.02)', border: `1px solid ${C.dashed}` }}>
+                <label style={{ display: 'block', fontFamily: F.mono, fontSize: 10, letterSpacing: 2, color: C.dim, fontWeight: 700, marginBottom: 8 }}>PROMO CODE</label>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input
+                    value={couponCode}
+                    onChange={e => setCouponCode(e.target.value)}
+                    placeholder="ENTER CODE"
+                    disabled={appliedCoupon}
+                    style={{ flex: 1, padding: 10, border: `1px solid ${appliedCoupon ? '#22c55e' : C.dashed}`, background: C.bg, color: C.text, fontFamily: F.mono, fontSize: 12, outline: 'none' }}
+                  />
+                  {!appliedCoupon ? (
+                    <button 
+                      onClick={handleApplyCoupon}
+                      disabled={isValidatingCoupon || !couponCode}
+                      style={{ background: C.yellow, color: C.bg, border: 'none', padding: '0 16px', fontFamily: F.heavy, fontSize: 11, cursor: 'pointer', opacity: (isValidatingCoupon || !couponCode) ? 0.5 : 1 }}
+                    >
+                      {isValidatingCoupon ? '...' : 'APPLY'}
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => { setAppliedCoupon(null); setCouponCode(''); }}
+                      style={{ background: 'transparent', color: C.pink, border: `1px solid ${C.pink}`, padding: '0 12px', fontFamily: F.heavy, fontSize: 11, cursor: 'pointer' }}
+                    >
+                      REMOVE
+                    </button>
+                  )}
+                </div>
+                {couponError && <div style={{ color: '#ef4444', fontSize: 10, marginTop: 4, fontFamily: F.mono }}>{couponError}</div>}
+                {appliedCoupon && <div style={{ color: '#22c55e', fontSize: 10, marginTop: 4, fontFamily: F.mono }}>✓ APPLIED: {appliedCoupon.discount_percent}% OFF</div>}
+              </div>
             </div>
             <button
               style={{ width: '100%', marginTop: 18, background: C.pink, color: C.bg, border: 'none', padding: 16, fontFamily: F.heavy, fontSize: 14, letterSpacing: 2, cursor: canContinue ? 'pointer' : 'not-allowed', opacity: canContinue ? 1 : 0.5 }}
@@ -113,7 +185,7 @@ export function Checkout({ tier, qty, total, onClose, eventData }: Props) {
 
         {step === 2 && (
           <div style={{ animation: 'ss-fade-in 0.4s' }}>
-            <h2 style={{ fontFamily: F.display, fontSize: 40, margin: '0 0 24px', letterSpacing: -1 }}>PAY {total.toLocaleString()} RWF</h2>
+            <h2 style={{ fontFamily: F.display, fontSize: 40, margin: '0 0 24px', letterSpacing: -1 }}>PAY {finalTotal.toLocaleString()} RWF</h2>
 
             <div style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${C.dim}`, padding: 24, marginBottom: 24 }}>
               <p style={{ fontFamily: F.mono, fontSize: 11, color: C.yellow, margin: '0 0 16px', letterSpacing: 2, fontWeight: 700 }}>MOMO TRANSFER DETAILS:</p>
@@ -123,7 +195,7 @@ export function Checkout({ tier, qty, total, onClose, eventData }: Props) {
                 <div style={{ marginBottom: 24 }}>
                   <p style={{ fontSize: 13, color: C.dim, marginBottom: 16, lineHeight: 1.4 }}>Tap the button below to dial the payment code automatically on your phone.</p>
                   <a
-                    href={`tel:*182*1*1*${eventData.payTo}*${total}%23`}
+                    href={`tel:*182*1*1*${eventData.payTo}*${finalTotal}%23`}
                     style={{
                       display: 'block',
                       background: C.yellow,
@@ -140,7 +212,7 @@ export function Checkout({ tier, qty, total, onClose, eventData }: Props) {
                     DIAL TO PAY ↗
                   </a>
                   <div style={{ textAlign: 'center', fontSize: 11, color: C.dim }}>
-                    Code: <span style={{ color: C.text }}>*182*1*1*{eventData.payTo}*{total}#</span>
+                    Code: <span style={{ color: C.text }}>*182*1*1*{eventData.payTo}*{finalTotal}#</span>
                   </div>
                 </div>
               ) : (
@@ -208,7 +280,7 @@ export function Checkout({ tier, qty, total, onClose, eventData }: Props) {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontFamily: F.mono, fontSize: 12, color: C.dim }}>TOTAL:</span>
-                <span style={{ fontFamily: F.heavy, fontSize: 14 }}>{total.toLocaleString()} RWF</span>
+                <span style={{ fontFamily: F.heavy, fontSize: 14 }}>{finalTotal.toLocaleString()} RWF</span>
               </div>
             </div>
 

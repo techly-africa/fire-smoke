@@ -1,0 +1,303 @@
+error TS2468: Cannot find global value 'Promise'.
+node_modules/@supabase/auth-js/dist/module/GoTrueClient.d.ts(57,36): error TS2583: Cannot find name 'Map'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+node_modules/@supabase/auth-js/dist/module/lib/helpers.d.ts(41,32): error TS2304: Cannot find name 'PromiseConstructor'.
+node_modules/@supabase/phoenix/priv/static/types/longpoll.d.ts(7,11): error TS2583: Cannot find name 'Set'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+node_modules/@supabase/phoenix/priv/static/types/longpoll.d.ts(10,24): error TS2503: Cannot find namespace 'NodeJS'.
+node_modules/@supabase/postgrest-js/dist/index.d.cts(626,111): error TS2583: Cannot find name 'Set'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+node_modules/@supabase/postgrest-js/dist/index.d.cts(626,126): error TS2583: Cannot find name 'Map'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+node_modules/@supabase/storage-js/dist/index.d.cts(784,13): error TS2585: 'Symbol' only refers to a type, but is being used as a value here. Do you need to change your target library? Try changing the 'lib' compiler option to es2015 or later.
+node_modules/@supabase/storage-js/dist/index.d.cts(796,56): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+node_modules/@supabase/storage-js/dist/index.d.cts(796,83): error TS2503: Cannot find namespace 'NodeJS'.
+node_modules/@supabase/storage-js/dist/index.d.cts(1026,73): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+node_modules/@supabase/storage-js/dist/index.d.cts(1026,100): error TS2503: Cannot find namespace 'NodeJS'.
+node_modules/@types/babel__template/index.d.ts(11,28): error TS2583: Cannot find name 'Set'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+node_modules/@types/babel__traverse/index.d.ts(63,15): error TS2583: Cannot find name 'WeakMap'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+node_modules/@types/babel__traverse/index.d.ts(63,31): error TS2583: Cannot find name 'Map'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+node_modules/@types/babel__traverse/index.d.ts(64,16): error TS2583: Cannot find name 'WeakMap'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+node_modules/@types/babel__traverse/index.d.ts(90,13): error TS2583: Cannot find name 'Map'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+node_modules/@types/prop-types/index.d.ts(16,38): error TS2304: Cannot find name 'Iterable'.
+node_modules/@types/react/index.d.ts(448,26): error TS2304: Cannot find name 'Iterable'.
+node_modules/@types/react/index.d.ts(486,10): error TS2456: Type alias 'ReactNode' circularly references itself.
+node_modules/@types/react/index.d.ts(490,11): error TS2304: Cannot find name 'Iterable'.
+src/components/AdminDashboard.tsx(1,8): error TS1259: Module '"/Users/copainbienaime/Desktop/fire-smoke/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+src/components/AdminDashboard.tsx(5,42): error TS6142: Module './Toast' was resolved to '/Users/copainbienaime/Desktop/fire-smoke/src/components/Toast.tsx', but '--jsx' is not set.
+src/components/AdminDashboard.tsx(36,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(38,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(44,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(45,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(50,21): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(66,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(143,18): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(159,18): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(172,18): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(190,18): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(212,18): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(216,41): error TS2712: A dynamic import call in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(252,18): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(308,47): error TS2550: Property 'includes' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(315,31): error TS2550: Property 'startsWith' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(315,58): error TS2550: Property 'startsWith' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(315,89): error TS2550: Property 'includes' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(316,36): error TS2550: Property 'includes' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(316,67): error TS2550: Property 'includes' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(316,98): error TS2550: Property 'includes' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(316,127): error TS2550: Property 'includes' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(317,36): error TS2550: Property 'includes' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(317,68): error TS2550: Property 'includes' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(318,41): error TS2550: Property 'includes' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(318,78): error TS2550: Property 'includes' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(324,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(325,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(337,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(348,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(354,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(356,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(359,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(365,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(378,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(389,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(390,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(410,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(412,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(413,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(414,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(415,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(429,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(465,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(467,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(468,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(479,18): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(482,28): error TS2550: Property 'find' does not exist on type 'any[]'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(485,31): error TS2550: Property 'find' does not exist on type 'any[]'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(488,30): error TS2550: Property 'find' does not exist on type 'any[]'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(491,33): error TS2550: Property 'find' does not exist on type 'any[]'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(499,18): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(514,18): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(528,18): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(540,18): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(553,18): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(560,18): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(576,18): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(592,18): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(611,53): error TS2550: Property 'includes' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(612,49): error TS2550: Property 'includes' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(613,65): error TS2550: Property 'includes' does not exist on type 'string'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2015' or later.
+src/components/AdminDashboard.tsx(618,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(619,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(623,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(628,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(632,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(633,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(636,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(637,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(643,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(656,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(661,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(665,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(666,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(669,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(672,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(675,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(676,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(682,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(692,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(693,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(694,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(695,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(696,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(697,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(699,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(700,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(708,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(719,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(721,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(743,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(745,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(746,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(747,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(748,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(755,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(764,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(765,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(771,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(772,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(773,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(774,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(775,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(776,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(777,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(780,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(781,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(782,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(783,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(789,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(802,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(803,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(810,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(816,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(817,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(819,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(821,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(822,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(823,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(841,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(842,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(843,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(844,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(850,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(864,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(865,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(866,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(867,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(873,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(891,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(892,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(894,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(899,53): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(901,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(903,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(912,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(932,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(933,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(941,36): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/components/AdminDashboard.tsx(1004,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1005,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1006,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1007,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1008,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1010,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1025,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1026,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1027,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1028,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1036,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1038,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1059,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1061,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1063,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1064,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1065,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1066,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1067,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1068,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1069,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1070,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1071,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1072,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1073,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1076,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1078,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1079,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1080,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1081,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1082,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1083,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1085,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1086,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1087,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1088,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1089,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1100,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1103,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1108,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1110,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1111,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1118,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1128,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1129,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1130,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1140,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1141,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1153,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1154,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1161,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1166,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1167,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1168,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1169,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1170,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1172,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1174,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1175,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1176,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1177,46): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1179,43): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1179,126): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1181,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1182,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1183,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1187,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1189,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1199,43): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1207,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1208,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1209,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1210,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1235,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1236,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1237,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1238,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1239,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1240,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1241,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1242,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1243,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1246,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1248,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1249,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1250,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1251,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1252,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1253,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1265,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1266,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1285,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1286,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1295,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1296,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1297,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1298,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1299,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1301,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1314,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1315,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1316,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1317,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1318,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1319,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1331,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1332,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1333,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1334,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1346,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1347,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1347,123): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1352,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1353,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1354,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1355,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1356,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1357,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1358,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1359,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1362,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1367,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1368,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1369,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1370,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1371,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1373,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/components/AdminDashboard.tsx(1375,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/lib/cloudinary.ts(6,15): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.
+src/lib/cloudinary.ts(6,27): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/lib/cloudinary.ts(55,4): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/lib/supabase.ts(3,21): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.
+src/lib/supabase.ts(3,33): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/lib/supabase.ts(4,25): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.
+src/lib/supabase.ts(4,37): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/services/bookingService.ts(142,9): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/services/bookingService.ts(153,22): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/services/bookingService.ts(165,9): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/services/bookingService.ts(172,9): error TS2705: An async function or method in ES5 requires the 'Promise' constructor.  Make sure you have a declaration for the 'Promise' constructor or include 'ES2015' in your '--lib' option.
+src/services/mailService.ts(74,38): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.
+src/services/mailService.ts(74,50): error TS2339: Property 'env' does not exist on type 'ImportMeta'.

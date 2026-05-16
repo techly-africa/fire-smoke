@@ -43,7 +43,7 @@ export const bookingService = {
     return data as Booking[];
   },
 
-  async submitBooking(data: Omit<Booking, 'id' | 'ticket_number' | 'payment_status' | 'created_at' | 'confirmed_at' | 'ticket_sent' | 'used_at'>) {
+  async submitBooking(data: Omit<Booking, 'id' | 'ticket_number' | 'payment_status' | 'created_at' | 'confirmed_at' | 'ticket_sent' | 'used_at'> & { coupon_code?: string }) {
     const { data: booking, error } = await supabase
       .from('bookings')
       .insert([data])
@@ -52,6 +52,26 @@ export const bookingService = {
 
     if (error) throw error;
     return booking;
+  },
+
+  async validateCoupon(code: string) {
+    const { data, error } = await supabase
+      .from('coupons')
+      .select('*')
+      .eq('code', code.toUpperCase())
+      .eq('is_active', true)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') throw new Error('Invalid or expired coupon.');
+      throw error;
+    }
+
+    if (data.max_uses > 0 && data.current_uses >= data.max_uses) {
+      throw new Error('This coupon has reached its usage limit.');
+    }
+
+    return data;
   },
 
   // ------------------------------------------------------------------
@@ -145,6 +165,17 @@ export const bookingService = {
   async updateCms(key: string, content: any) {
     const { error } = await supabase
       .rpc('update_cms_section', { p_key: key, p_content: content });
+
+    if (error) throw error;
+  },
+
+  async submitPrediction(email: string, score1: number, score2: number) {
+    const { error } = await supabase
+      .rpc('submit_prediction', { 
+        p_email: email, 
+        p_score1: score1, 
+        p_score2: score2 
+      });
 
     if (error) throw error;
   },

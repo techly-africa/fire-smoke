@@ -1,8 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import * as staticData from './data';
 import { TornDivider } from './components/TornDivider';
 import { SectionHeader } from './components/SectionHeader';
 import { Checkout } from './components/Checkout';
+import { ToastContainer, useToast } from './components/Toast';
 import { AdminDashboard } from './components/AdminDashboard';
 import { AdminLogin } from './components/AdminLogin';
 import { FeatureModal } from './components/FeatureModal';
@@ -101,7 +103,7 @@ export function App() {
 
   // Dynamic Content State (CMS)
   const [cms, setCms] = useState<any>(() => {
-    const cached = localStorage.getItem('fs_cms_cache');
+    const cached = localStorage.getItem('fire_smoke_cms_v2');
     if (cached) {
       try {
         return JSON.parse(cached);
@@ -123,6 +125,7 @@ export function App() {
       HOSTS: staticData.HOSTS,
       SPONSORS: staticData.SPONSORS,
       QUIZ: staticData.QUIZ,
+      PREDICT_WIN: (staticData as any).PREDICT_WIN,
     };
   });
 
@@ -148,9 +151,10 @@ export function App() {
       try {
         const data = await bookingService.getAllCms();
         if (Object.keys(data).length > 0) {
+          // Deep merge static defaults with DB data to ensure new keys exist
           const merged = { ...cms, ...data };
           setCms(merged);
-          localStorage.setItem('fs_cms_cache', JSON.stringify(merged));
+          localStorage.setItem('fire_smoke_cms_v2', JSON.stringify(merged));
         }
       } catch (err) {
         console.error('CMS Fetch failed, using cached/static fallback');
@@ -160,15 +164,41 @@ export function App() {
   }, []);
 
   // Map CMS values to local constants for easier usage
+  const cmsData = cms;
   const {
     EVENT, TIERS, WHATS_NEW, GAMES, PRIZES, PRIZE_REWARDS,
-    SCHEDULE, GALLERY, TESTIMONIALS, FAQ, HOSTS, SPONSORS, QUIZ
+    SCHEDULE, GALLERY, TESTIMONIALS, FAQ, HOSTS, SPONSORS, QUIZ, PREDICT_WIN
   } = cms;
 
   // Capacity & Settings state
+  const { toasts, toast, remove } = useToast();
   const [capacity, setCapacity] = useState({ sold: 0, max: 200 });
   const [isSoldOut, setIsSoldOut] = useState(false);
   const [settings, setSettings] = useState<any[]>([]);
+
+  // Prediction State
+  const [pEmail, setPEmail] = useState('');
+  const [pScore1, setPScore1] = useState<string>('');
+  const [pScore2, setPScore2] = useState<string>('');
+  const [isSubmittingP, setIsSubmittingP] = useState(false);
+  const [hasPredicted, setHasPredicted] = useState(false);
+
+  const handlePredict = async () => {
+    if (!pEmail || pScore1 === '' || pScore2 === '') {
+      toast('Please fill in your email and both scores!', 'error');
+      return;
+    }
+    setIsSubmittingP(true);
+    try {
+      await bookingService.submitPrediction(pEmail, parseInt(pScore1), parseInt(pScore2));
+      setHasPredicted(true);
+      toast('Prediction locked in! Good luck.', 'success');
+    } catch (err: any) {
+      toast(`Prediction failed: ${err.message}`, 'error');
+    } finally {
+      setIsSubmittingP(false);
+    }
+  };
 
   useEffect(() => {
     async function loadData() {
@@ -513,7 +543,7 @@ export function App() {
 
     {/* Jenga Decoration */}
     <img
-      src="/photos/pngtree-wooden-jenga-tower-png-image_16011186.png"
+      src="https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930255/fire-smoke/gallery/fire-smoke/gallery/pngtree-wooden-jenga-tower-png-image_16011186.png"
       alt="Jenga Tower"
       style={{
         position: 'absolute',
@@ -562,7 +592,7 @@ export function App() {
       <section style={{ 
         width: '100%', 
         position: 'relative',
-        backgroundImage: 'url(/photos/image.png)',
+        backgroundImage: 'url(https://res.cloudinary.com/de2wwxpdo/image/upload/v1778930182/fire-smoke/gallery/fire-smoke/gallery/image.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed', // nice parallax-ish feel
@@ -612,8 +642,165 @@ export function App() {
 
       <TornDivider color={C.bg} flip />
 
-  {/* ── GALLERY ── */ }
-  <section style={{ width: '100%', background: C.bg }}>
+  {/* ── Predict & Win Section ── */}
+      {PREDICT_WIN && (
+      <section id="predict" style={{ 
+        background: '#020202', 
+        padding: '140px 20px', 
+        borderTop: `1px solid ${C.border}`, 
+        borderBottom: `1px solid ${C.border}`, 
+        position: 'relative', 
+        overflow: 'hidden',
+        zIndex: 10,
+        minHeight: '80vh',
+        display: 'flex',
+        alignItems: 'center'
+      }}>
+        {/* Animated Background Elements */}
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.15, background: `url(${PREDICT_WIN?.image}) center/cover no-repeat`, filter: 'grayscale(100%) brightness(0.4)' }} />
+        <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '40%', height: '40%', background: 'radial-gradient(circle, rgba(250, 204, 21, 0.1) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        
+        <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 5, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: 80, alignItems: 'center', width: '100%' }}>
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
+              <div style={{ width: 40, height: 40, borderRadius: '50%', border: `1px solid ${C.yellow}`, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(250, 204, 21, 0.1)' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.yellow} strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 2L12 22M2 12L22 12" />
+                  <path d="M12 2C14.5 4.5 16 8 16 12C16 16 14.5 19.5 12 22" />
+                  <path d="M12 2C9.5 4.5 8 8 8 12C8 16 9.5 19.5 12 22" />
+                </svg>
+              </div>
+              <span style={{ fontFamily: F.heavy, fontSize: 13, color: C.yellow, letterSpacing: 4 }}>UCL FINAL 2026</span>
+            </div>
+            <h2 style={{ fontFamily: F.heavy, fontSize: 'clamp(50px, 10vw, 85px)', lineHeight: 0.85, marginBottom: 32, letterSpacing: -2 }}>
+              PREDICT <br/>& <span style={{ color: C.yellow }}>WIN</span>
+            </h2>
+            <p style={{ fontSize: 20, color: '#888', maxWidth: 480, lineHeight: 1.5, marginBottom: 40, fontFamily: F.mono }}>
+              {PREDICT_WIN?.description}
+            </p>
+            
+            <div style={{ background: 'linear-gradient(90deg, rgba(250, 204, 21, 0.15), transparent)', borderLeft: `6px solid ${C.yellow}`, padding: '24px 32px' }}>
+              <div style={{ fontSize: 12, color: C.yellow, fontFamily: F.heavy, letterSpacing: 2, marginBottom: 12 }}>THE ULTIMATE PRIZE</div>
+              <div style={{ fontSize: 28, fontFamily: F.heavy, textTransform: 'uppercase' }}>{PREDICT_WIN?.prize}</div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            style={{ 
+              background: 'rgba(255,255,255,0.02)', 
+              backdropFilter: 'blur(20px)',
+              border: `1px solid rgba(255,255,255,0.1)`, 
+              padding: '60px 40px', 
+              borderRadius: 4,
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              position: 'relative' 
+            }}
+          >
+            <div style={{ position: 'absolute', top: 20, right: 20, opacity: 0.2 }}>
+              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke={C.yellow} strokeWidth="1">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+              </svg>
+            </div>
+
+            <div style={{ textAlign: 'center', marginBottom: 50 }}>
+              <div style={{ fontSize: 14, fontFamily: F.mono, color: C.yellow, marginBottom: 16 }}>{PREDICT_WIN?.date} • {PREDICT_WIN?.time}</div>
+              <div style={{ fontSize: 32, fontFamily: F.heavy, letterSpacing: -1, textTransform: 'uppercase', color: '#fff' }}>{PREDICT_WIN?.match}</div>
+            </div>
+
+            {!PREDICT_WIN?.active ? (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                style={{ textAlign: 'center', padding: '60px 0', border: `1px dashed ${C.border}`, borderRadius: 8 }}
+              >
+                <div style={{ fontSize: 40, fontFamily: F.heavy, color: '#333', marginBottom: 16 }}>ENTRY_CLOSED</div>
+                <p style={{ color: '#666', fontFamily: F.mono, fontSize: 14 }}>Predictions are no longer being accepted for this event.</p>
+                <div style={{ marginTop: 32, fontSize: 12, color: C.yellow, opacity: 0.5 }}>Check back for the next match!</div>
+              </motion.div>
+            ) : hasPredicted ? (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                style={{ textAlign: 'center', padding: '40px 0' }}
+              >
+                <div style={{ width: 80, height: 80, borderRadius: '50%', background: C.yellow, margin: '0 auto 24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="3">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+                <h3 style={{ fontFamily: F.heavy, fontSize: 24, marginBottom: 12 }}>LOCKED IN!</h3>
+                <p style={{ color: '#888', fontSize: 14, fontFamily: F.mono }}>We've registered your prediction: {pScore1} - {pScore2}. Good luck!</p>
+              </motion.div>
+            ) : (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 20, marginBottom: 40 }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <motion.input 
+                      whileFocus={{ scale: 1.05, borderColor: C.yellow }}
+                      type="number" 
+                      value={pScore1}
+                      onChange={(e) => setPScore1(e.target.value)}
+                      placeholder="0" 
+                      style={{ width: 100, height: 100, background: '#000', border: `2px solid ${C.border}`, borderRadius: 8, color: C.yellow, textAlign: 'center', fontSize: 48, fontFamily: F.heavy, outline: 'none', transition: 'all 0.3s' }} 
+                    />
+                    <div style={{ fontSize: 11, color: '#666', marginTop: 12, fontFamily: F.mono, textTransform: 'uppercase' }}>{PREDICT_WIN?.team1 || 'HOME'} SCORE</div>
+                  </div>
+                  <div style={{ fontSize: 40, fontFamily: F.heavy, color: '#333', marginTop: -30 }}>VS</div>
+                  <div style={{ textAlign: 'center' }}>
+                    <motion.input 
+                      whileFocus={{ scale: 1.05, borderColor: C.yellow }}
+                      type="number" 
+                      value={pScore2}
+                      onChange={(e) => setPScore2(e.target.value)}
+                      placeholder="0" 
+                      style={{ width: 100, height: 100, background: '#000', border: `2px solid ${C.border}`, borderRadius: 8, color: C.yellow, textAlign: 'center', fontSize: 48, fontFamily: F.heavy, outline: 'none', transition: 'all 0.3s' }} 
+                    />
+                    <div style={{ fontSize: 11, color: '#666', marginTop: 12, fontFamily: F.mono, textTransform: 'uppercase' }}>{PREDICT_WIN?.team2 || 'AWAY'} SCORE</div>
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: 32 }}>
+                  <label style={{ display: 'block', fontSize: 10, color: '#666', marginBottom: 8, fontFamily: F.mono }}>YOUR EMAIL TO CLAIM PRIZE</label>
+                  <input 
+                    type="email" 
+                    value={pEmail}
+                    onChange={(e) => setPEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: `1px solid ${C.border}`, padding: '16px', color: '#fff', outline: 'none', borderRadius: 4, fontFamily: F.mono }}
+                  />
+                </div>
+
+                <motion.button 
+                  whileHover={{ scale: 1.02, boxShadow: `0 0 20px ${C.yellow}66` }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handlePredict}
+                  disabled={isSubmittingP}
+                  style={{ width: '100%', background: C.yellow, color: '#000', border: 'none', padding: '20px', fontFamily: F.heavy, fontSize: 16, cursor: 'pointer', borderRadius: 4, letterSpacing: 2 }}
+                >
+                  {isSubmittingP ? 'SUBMITTING...' : 'SUBMIT PREDICTION'}
+                </motion.button>
+              </>
+            )}
+            
+            <div style={{ textAlign: 'center', marginTop: 24, padding: '0 20px' }}>
+              <p style={{ fontSize: 11, color: '#555', lineHeight: 1.4 }}>*Exclusive to ticket holders. Predictions close 15 mins before kickoff.</p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+      )}
+
+
+      <section id="gallery" style={{ padding: '120px 20px', background: C.bg }}>
     <div className="section-responsive app-container" style={{ color: C.text }}>
       <SectionHeader title="LAST EDITION" sub="// roll.gif" />
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
@@ -994,6 +1181,8 @@ export function App() {
   }
 
   { showCookieConsent && <CookieConsent onAccept={handleAcceptCookies} /> }
+  
+  <ToastContainer toasts={toasts} remove={remove} />
     </div >
   );
 }
