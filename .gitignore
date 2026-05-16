@@ -3,3 +3,5 @@ dist/
 .env
 backups/
 supabase/.temp/
+.vercel
+.env*.local
