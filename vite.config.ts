@@ -46,16 +46,6 @@ export default defineConfig({
         ],
         runtimeCaching: [
           {
-            // Cache Supabase API reads (storefront CMS, tiers, etc.)
-            urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/(cms|settings)/,
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'supabase-api',
-              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 }, // 1 hour
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
-          {
             // Cache Google Fonts
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/,
             handler: 'StaleWhileRevalidate',
