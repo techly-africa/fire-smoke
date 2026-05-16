@@ -72,6 +72,13 @@ export function App() {
     localStorage.setItem('fs_admin_auth', 'true');
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('fs_admin_auth');
+    setIsAuthenticated(false);
+    setIsAdmin(false);
+    window.history.replaceState({}, '', window.location.pathname);
+  };
+
   const handleAcceptCookies = () => {
     setShowCookieConsent(false);
     localStorage.setItem('fs_cookie_accepted', 'true');
@@ -210,7 +217,7 @@ export function App() {
     if (!isAuthenticated) {
       return <AdminLogin onLogin={handleAdminLogin} />;
     }
-    return <AdminDashboard />;
+    return <AdminDashboard onLogout={handleLogout} />;
   }
 
   const tier = dynamicTiers.find((t: any) => t.id === selectedTierId) || dynamicTiers[0];

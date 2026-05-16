@@ -6,7 +6,7 @@ import { ToastContainer, useToast } from './Toast';
 import { supabase } from '../lib/supabase';
 import './AdminDashboard.css';
 
-export function AdminDashboard() {
+export function AdminDashboard({ onLogout }: { onLogout?: () => void }) {
   const { toasts, toast, remove } = useToast();
 
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -14,6 +14,7 @@ export function AdminDashboard() {
   const [filter, setFilter] = useState<'ALL' | 'PENDING' | 'CONFIRMED' | 'REJECTED'>('PENDING');
   const [search, setSearch] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   const confirmedTicketsCount = bookings
     .filter(b => b.payment_status === 'CONFIRMED')
@@ -333,8 +334,14 @@ export function AdminDashboard() {
     }
   }
 
-  async function handleDelete(id: string, name: string) {
-    if (!window.confirm(`DELETE booking for "${name}"? This cannot be undone.`)) return;
+  function handleDelete(id: string, name: string) {
+    setDeleteTarget({ id, name });
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    const { id, name } = deleteTarget;
+    setDeleteTarget(null);
     setActionLoading(`delete-${id}`);
     try {
       const { error } = await supabase.rpc('delete_booking', { p_id: id });
@@ -359,6 +366,45 @@ export function AdminDashboard() {
   return (
     <>
     <ToastContainer toasts={toasts} remove={remove} />
+
+    {/* ── Delete confirmation modal ── */}
+    {deleteTarget && (
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+      }}>
+        <div style={{
+          background: '#111', border: `1px solid #ef4444`,
+          maxWidth: 420, width: '100%', padding: 32,
+        }}>
+          <div style={{ fontFamily: F.display, fontSize: 11, color: '#ef4444', letterSpacing: 2, marginBottom: 16 }}>⚠ CONFIRM DELETE</div>
+          <p style={{ fontFamily: F.mono, fontSize: 15, color: '#fff', margin: '0 0 8px' }}>
+            Delete booking for
+          </p>
+          <p style={{ fontFamily: F.display, fontSize: 20, color: C.yellow, margin: '0 0 24px', wordBreak: 'break-word' }}>
+            {deleteTarget.name}
+          </p>
+          <p style={{ fontFamily: F.mono, fontSize: 12, color: '#9ca3af', margin: '0 0 28px' }}>
+            This action is permanent and cannot be undone.
+          </p>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <button
+              onClick={() => setDeleteTarget(null)}
+              style={{ flex: 1, background: 'transparent', border: `1px solid #374151`, color: '#9ca3af', padding: '12px', cursor: 'pointer', fontFamily: F.mono, fontSize: 13 }}
+            >
+              CANCEL
+            </button>
+            <button
+              onClick={confirmDelete}
+              style={{ flex: 1, background: '#ef4444', border: 'none', color: '#fff', padding: '12px', cursor: 'pointer', fontFamily: F.display, fontSize: 13, fontWeight: 700 }}
+            >
+              YES, DELETE
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     <div className="admin-shell" style={{ background: C.bg, minHeight: '100vh', color: C.text, fontFamily: F.mono }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <header className="admin-header" style={{ color: C.text }}>
@@ -366,13 +412,23 @@ export function AdminDashboard() {
             <h1 style={{ fontFamily: F.display, fontSize: 'clamp(24px, 5vw, 40px)', color: C.yellow, margin: 0 }}>BOOKING_ADMIN</h1>
             <p style={{ color: C.dim, margin: '4px 0 0', fontSize: 14 }}>Manage RSVPs and Confirm Payments</p>
           </div>
-          <button 
-            onClick={() => activeTab === 'GUESTS' ? loadBookings() : activeTab === 'LOGISTICS' ? loadSettings() : loadCms()}
-            disabled={loading}
-            style={{ background: 'transparent', border: `1px solid ${C.yellow}`, color: C.yellow, padding: '8px 16px', cursor: 'pointer', fontFamily: F.heavy, fontSize: 12 }}
-          >
-            {loading ? '...' : 'REFRESH_DATA()'}
-          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button 
+              onClick={() => activeTab === 'GUESTS' ? loadBookings() : activeTab === 'LOGISTICS' ? loadSettings() : loadCms()}
+              disabled={loading}
+              style={{ background: 'transparent', border: `1px solid ${C.yellow}`, color: C.yellow, padding: '8px 16px', cursor: 'pointer', fontFamily: F.heavy, fontSize: 12 }}
+            >
+              {loading ? '...' : 'REFRESH_DATA()'}
+            </button>
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                style={{ background: 'transparent', border: '1px solid #ef4444', color: '#ef4444', padding: '8px 16px', cursor: 'pointer', fontFamily: F.heavy, fontSize: 12 }}
+              >
+                LOGOUT
+              </button>
+            )}
+          </div>
         </header>
 
         {/* Tab Switcher */}
