@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     total_price INTEGER NOT NULL,
     payment_status TEXT DEFAULT 'PENDING' CHECK (payment_status IN ('PENDING', 'CONFIRMED', 'REJECTED')),
     momo_reference TEXT,
+    coupon_code TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     confirmed_at TIMESTAMP WITH TIME ZONE,
     ticket_sent BOOLEAN DEFAULT FALSE,
